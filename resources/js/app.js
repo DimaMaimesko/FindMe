@@ -6,6 +6,7 @@
  */
 
 require('./bootstrap');
+require('./MyScripts');
 
 window.Vue = require('vue');
 
@@ -30,4 +31,9 @@ Vue.component('example-component', require('./components/ExampleComponent.vue'))
 
 const app = new Vue({
     el: '#app'
+});
+
+
+$("[data-confirm]").click(function() {
+    return confirm($(this).attr('data-confirm'));
 });

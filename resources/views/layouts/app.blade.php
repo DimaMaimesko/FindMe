@@ -9,8 +9,7 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -64,7 +63,17 @@
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
                                     </form>
+
+                                    <a class="dropdown-item" href="{{ route('admin.users.index') }}"
+                                       onclick="event.preventDefault();
+                                       document.getElementById('admin').submit();">
+                                        {{ __('Admin') }}
+                                    </a>
+
+                                    <form id="admin" action="{{ route('admin.users.index') }}" method="GET" style="display: none;">
+                                    </form>
                                 </div>
+
                             </li>
                         @endguest
                     </ul>
@@ -73,8 +82,14 @@
         </nav>
 
         <main class="py-4">
-            @yield('content')
+            <div class="container">
+                @include('layouts.flash')
+                @yield('content')
+            </div>
+
         </main>
     </div>
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>
