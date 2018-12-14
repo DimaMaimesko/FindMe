@@ -26,8 +26,9 @@ class UserCreateRequest extends FormRequest
         return [
             'name' => 'required|string',
             'email' => 'required|string',
+            'password' => 'required|string',
             //'salary' => 'required|string',
-            //'picture.*' => 'required|max:5000',
+            'photo.*' => 'required|max:5000',
         ];
     }
 }

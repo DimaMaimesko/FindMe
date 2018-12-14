@@ -3,7 +3,7 @@
 @section('content')
     @include('admin.users._nav')
 
-    {!! Form::open(['url' => route('admin.users.store'),'method'=>'POST','autocomplete'=>'off']) !!}
+    {!! Form::open(['url' => route('admin.users.store'),'method'=>'POST','autocomplete'=>'off', 'enctype'=>"multipart/form-data"]) !!}
     <br>
     <div class="form-group">
         <label for="userCreateName">Username</label>
@@ -17,6 +17,10 @@
     <div class="form-group">
         <label for="userCreatePassword">Password</label>
         {!! Form::password('password',['class'=>'form-control','placeholder'=>'Password','required','id'=>'userCreatePassword']) !!}
+    </div>
+    <div class="form-group">
+        <label>Photo</label>
+        {!! Form::file('photo',['class'=>'form-control']) !!}
     </div>
 
 

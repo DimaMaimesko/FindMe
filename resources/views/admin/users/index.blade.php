@@ -19,6 +19,7 @@
         <thead>
         <tr>
             <th>ID</th>
+            <th style="width:100px">Photo</th>
             <th>Name</th>
             <th>Email</th>
         </tr>
@@ -27,6 +28,16 @@
         @foreach ($users as $user)
             <tr>
                 <td>{{ $user->id }}</td>
+                <td>
+                    @if(isset($user->photo))
+
+                        <a href="{{asset($user->photo)}}">
+                            <img src="{{asset($user->thumbnail)}}" alt="Photo" style="width:100%">
+
+                        </a>
+
+                        @endif
+                </td>
                 <td><a href="{{ route('admin.users.show', $user) }}">{{ $user->name }}</a></td>
                 <td>{{ $user->email }}</td>
 

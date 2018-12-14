@@ -83,6 +83,7 @@
 
         <main class="py-4">
             <div class="container">
+
                 @include('layouts.flash')
                 @yield('content')
             </div>

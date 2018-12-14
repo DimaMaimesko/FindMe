@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'photo'
     ];
 
     /**
@@ -27,4 +27,12 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    protected $appends = array('thumbnail');
+
+    public function getThumbnailAttribute()
+    {
+        $path = pathinfo($this->photo);
+        return $path['dirname'].'/'.$path['filename'].'-thumb.jpg';
+    }
 }

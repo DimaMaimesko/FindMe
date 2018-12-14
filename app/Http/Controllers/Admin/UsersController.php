@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserUpdateRequest;
+use Illuminate\Support\Facades\Storage;
+use Image;
 
 class UsersController extends Controller
 {
@@ -29,7 +31,26 @@ class UsersController extends Controller
 
     public function store(UserCreateRequest $request)
     {
-        $user = User::create($request->all());
+        $file = $request->file('photo');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs('/', $filename, 's3');
+        Storage::disk('s3')->setVisibility($path, 'public');
+        $url = Storage::disk('s3')->url($path);
+
+        $user = User::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => $request->input('password'),
+            'photo' => $url,
+        ]);
+
+        $thumb = Image::make($file);
+        $thumb->fit(200);
+        $jpg = (string) $thumb->encode('jpg');
+
+        $thumbName = pathinfo($filename, PATHINFO_FILENAME).'-thumb.jpg';
+        Storage::disk('s3')->put($thumbName,$jpg,'public');
+
         return redirect()->route('admin.users.show', $user)->with('success','New User created successfully!');
 
     }
@@ -52,8 +73,25 @@ class UsersController extends Controller
 
     public function update(UserUpdateRequest $request, $id)
     {
+        $file = $request->file('photo');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs('/', $filename, 's3');
+        Storage::disk('s3')->setVisibility($path, 'public');
+        $url = Storage::disk('s3')->url($path);
+
         $user = User::find($id);
-        $user->update($request->all());
+        $user->update([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'photo' => $url,
+        ]);
+
+        $thumb = Image::make($file);
+        $thumb->fit(200);
+        $jpg = (string) $thumb->encode('jpg');
+
+        $thumbName = pathinfo($filename, PATHINFO_FILENAME).'-thumb.jpg';
+        Storage::disk('s3')->put($thumbName,$jpg,'public');
         return  redirect()->route('admin.users.show', $user)->with('success','User ' .$user->name . ' updated successfully!');
 
     }
@@ -61,8 +99,8 @@ class UsersController extends Controller
     public function destroy($id)
     {
         $user = User::find($id);
+        Storage::disk('s3')->delete($user->photo);
         User::destroy($id);
-
         $users = User::paginate(self::USERS_FOR_PAGINATION);
         return redirect()->route('admin.users.index', $users)->with('warning', 'User ' .$user->name . ' destroyed!');
 
