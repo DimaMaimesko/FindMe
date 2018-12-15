@@ -5,6 +5,9 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Services\RelationsService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 
 class User extends Authenticatable
 {
@@ -28,11 +31,20 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    protected $appends = array('thumbnail');
+    protected $appends = array('thumbnail', 'isFollowedByAuth');
 
     public function getThumbnailAttribute()
     {
-        $path = pathinfo($this->photo);
-        return $path['dirname'].'/'.$path['filename'].'-thumb.jpg';
+        if (isset($this->photo)){
+            $path = pathinfo($this->photo);
+            return $path['dirname'].'/'.$path['filename'].'-thumb.jpg';
+        }
+        return "";
+    }
+
+    public function getIsFollowedByAuthAttribute()
+    {
+//        $authId = Auth::id();
+//        Redis::command('sadd', ['followers'])
     }
 }

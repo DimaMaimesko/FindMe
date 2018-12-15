@@ -72,6 +72,15 @@
 
                                     <form id="admin" action="{{ route('admin.users.index') }}" method="GET" style="display: none;">
                                     </form>
+
+                                    <a class="dropdown-item" href="{{ route('frontend.home.index') }}"
+                                       onclick="event.preventDefault();
+                                       document.getElementById('mypage').submit();">
+                                        {{ __('MyPage') }}
+                                    </a>
+
+                                    <form id="mypage" action="{{ route('frontend.home.index') }}" method="GET" style="display: none;">
+                                    </form>
                                 </div>
 
                             </li>

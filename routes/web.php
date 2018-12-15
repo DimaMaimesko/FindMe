@@ -31,3 +31,18 @@ Route::group([
     Route::resource('users', 'UsersController');
 
 });
+
+Route::group([
+    'middleware' => 'auth',
+    'prefix' => 'frontend',
+    'as' => 'frontend.',
+    'namespace' => 'Frontend',
+], function () {
+
+    Route::get('/home', 'HomeController@index')->name('home.index');
+    Route::post('/home/follow', 'HomeController@follow')->name('home.follow');
+    Route::post('/home/unfollow', 'HomeController@unfollow')->name('home.unfollow');
+
+});
+
+
