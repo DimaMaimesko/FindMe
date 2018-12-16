@@ -43,6 +43,10 @@ Route::group([
     Route::post('/home/follow', 'HomeController@follow')->name('home.follow');
     Route::post('/home/unfollow', 'HomeController@unfollow')->name('home.unfollow');
 
+    Route::get('/main', 'MainPageController@index')->name('main.index');
+    Route::get('/chat', 'Chat\ChatController@index')->name('chat.index');
+    Route::post('/chat/send', 'Chat\ChatController@sendMessage')->name('chat.send');
+
 });
 
 

@@ -4,7 +4,7 @@
             <div class="col-md-8">
                 <div class="card card-default">
                     <div class="text-center">
-                        <a href="" class="btn btn-success text-uppercase">My Page</a>
+                        <a :href="routeName" class="btn btn-success text-uppercase">My Page</a>
                     </div>
                     <div class="card-header">All Users</div>
                     <div class="card-body">
@@ -52,15 +52,12 @@
             'authUserId',
             'followees',
         ],
-
-
         data: function(){
             return {
                 followeesReactive: [],
-
+                routeName: "/frontend/main"
             }
         },
-
         methods: {
            follow: function (id) {
                axios({
@@ -84,12 +81,8 @@
                     });
                 });
             },
-
-
         },
-
         mounted() {
-
             this.followeesReactive = this.followees.map(function (strVal) {
                 return Number(strVal);
             });
