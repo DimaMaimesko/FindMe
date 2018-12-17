@@ -11,6 +11,8 @@
                     <div class="card-body">
                         <input v-model="message" @keyup.enter="sendMessage" type="text" class="form-control" placeholder="Enter your message here and press Enter">
                     </div>
+                    <p>User: {{user}}</p>
+                    <p>Room: {{room}}</p>
                 </div>
             </div>
         </div>
@@ -22,6 +24,11 @@
 
 
     export default {
+        props: [
+            'user',
+            'room',
+
+        ],
 
         data: function(){
             return {

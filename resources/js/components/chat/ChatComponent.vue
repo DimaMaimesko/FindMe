@@ -4,7 +4,7 @@
             <div class="col-md-6">
 
                 <h3>Chat</h3>
-                <echo-chat-component></echo-chat-component>
+                <private-echo-chat-component :user="user" :room="room"></private-echo-chat-component>
 
             </div>
             <div class="col-md-6">
@@ -31,6 +31,11 @@
 
 <script>
     export default {
+        props: [
+            'user',
+            'room',
+
+        ],
         mounted() {
             console.log('Component mounted.')
         }

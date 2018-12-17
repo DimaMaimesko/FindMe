@@ -22,6 +22,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue'))
 Vue.component('users-table', require('./components/UsersTable.vue'));
 Vue.component('chat-component', require('./components/chat/ChatComponent.vue'));
 Vue.component('echo-chat-component', require('./components/chat/EchoChatComponent.vue'));
+Vue.component('private-echo-chat-component', require('./components/chat/PrivateEchoChatComponent.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key)))
@@ -36,7 +37,7 @@ const app = new Vue({
     el: '#app'
 });
 
-
-$("[data-confirm]").click(function() {
-    return confirm($(this).attr('data-confirm'));
-});
+//
+// $("[data-confirm]").click(function() {
+//     return confirm($(this).attr('data-confirm'));
+// });
