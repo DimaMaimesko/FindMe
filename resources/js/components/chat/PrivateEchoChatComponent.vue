@@ -1,8 +1,8 @@
 <template>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <h1>Private room # {{room}}</h1>
+
+                <h3>Private room # {{room}}</h3>
                 <h5>for next users:</h5>
                 <ul v-for="user in room.users">{{user.name}}</ul>
                 <hr>
@@ -26,7 +26,7 @@
                     </div>
                     <div v-if='isActive'  class="alert alert-info">{{isActive}} is typing...</div>
                 </div>
-            </div>
+
         </div>
     </div>
 </template>

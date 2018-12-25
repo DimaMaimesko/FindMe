@@ -20,9 +20,10 @@ window.Vue = require('vue');
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('users-table', require('./components/UsersTable.vue'));
+
 Vue.component('chat-component', require('./components/chat/ChatComponent.vue'));
-Vue.component('echo-chat-component', require('./components/chat/EchoChatComponent.vue'));
 Vue.component('private-echo-chat-component', require('./components/chat/PrivateEchoChatComponent.vue'));
+Vue.component('rooms-component', require('./components/chat/RoomsComponent.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key)))

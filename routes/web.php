@@ -46,6 +46,7 @@ Route::group([
     Route::get('/main', 'MainPageController@index')->name('main.index');
     Route::get('/chat', 'Chat\ChatController@index')->name('chat.index');
     Route::post('/chat/send', 'Chat\ChatController@sendMessage')->name('chat.send');
+    Route::post('/chat/rooms/create', 'Chat\RoomsController@create')->name('chat.rooms.create');
 
 });
 

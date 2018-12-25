@@ -10,7 +10,7 @@
             <div class="col-md-6">
 
                 <h3>Rooms</h3>
-
+                <rooms-component></rooms-component>
             </div>
         </div>
         <hr>
@@ -30,7 +30,9 @@
 </template>
 
 <script>
+    import RoomsComponent from "./RoomsComponent";
     export default {
+        components: {RoomsComponent},
         props: [
             'user',
             'room',
