@@ -3,30 +3,16 @@
 namespace App;
 
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Services\RelationsService;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redis;
 
 class User extends Authenticatable
 {
     use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'name', 'email', 'password', 'photo'
+        'name', 'email', 'password', 'photo','id'
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
         'password', 'remember_token',
     ];
@@ -47,4 +33,15 @@ class User extends Authenticatable
 //        $authId = Auth::id();
 //        Redis::command('sadd', ['followers'])
     }
+
+    public function rooms()
+    {
+        return $this->hasMany('App\Models\Room', 'creator_id', 'id');
+    }
+
+
+
+
+
+
 }

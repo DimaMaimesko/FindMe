@@ -2,13 +2,34 @@
     <div class="container">
         <div class="row justify-content-center">
             <button class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Create New Room</button>
-            <select v-model="selectedRoom">
-                <option disabled value="">Please select one</option>
-                <option>Room1</option>
-                <option>Room2</option>
-                <option>Room3</option>
+            <select @change="roomChanged" v-model="selectedRoom">
+                <option disabled value="">Please select room</option>
+                <option v-for="room in rooms" :value="room">{{room.name}}</option>
             </select><br>
-            <span>Selected: {{ selectedRoom }}</span>
+
+            <div class="card-header">Room name: {{ selectedRoom.name }}</div>
+            <div class="card-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th style="width:100px">Photo</th>
+                        <th>Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="member in members" >
+                        <td>
+                            <a :href="member.photo">
+                                <img :src="member.thumbnail" alt="Photo" style="width:100%">
+                            </a>
+                        </td>
+                        <td>{{ member.name }}</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+
+            </div>
 
             <!-- Modal -->
             <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -22,7 +43,9 @@
                         </div>
                         <div class="modal-body">
                             <input v-model="roomName" placeholder="Room name">
-                            <p>Message is: {{ roomName }}</p>
+
+                            <friends-for-room @friendsList="checked = $event"></friends-for-room>
+
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -37,19 +60,21 @@
 </template>
 
 <script>
-
-
+    import { eventBus } from "../../app";
 
     export default {
-
         props: {
 
         },
 
        data: function(){
            return {
-               selectedRoom: '',
+               selectedRoom: {},
+               rooms: [],
+               members: [],
                roomName: '',
+               friends: [],
+               checked: [],
            }
        },
         computed: {
@@ -57,21 +82,43 @@
         },
 
         mounted() {
-
+           this.getRooms();
         },
 
         methods:  {
+
+            getRooms: function () {
+                axios({
+                    method: 'get',
+                    url:    '/frontend/chat/rooms/get-rooms',
+                }).then((response) => {
+                    this.rooms = response.data.rooms;
+                });
+
+            },
+            roomChanged: function () {
+                console.log(this.selectedRoom);
+                axios({
+                    method: 'get',
+                    url:    '/frontend/chat/rooms/get-members',
+                    params: {room_id: this.selectedRoom.id}
+                }).then((response) => {
+                    this.members = response.data.members;
+                    console.log(this.members);
+                });
+
+            },
+
             createRoom: function () {
-                alert("Created!");
-                // axios({
-                //     method: 'post',
-                //     url:    '/frontend/chat/rooms/create',
-                //     params: {message: this.message, room_id: this.room}
-                // }).then((response) => {
-                //     console.log('Data: '+response.data);
-                // });
-                // this.allMessages.push(this.message)
-                // this.message = '';
+                axios({
+                    method: 'post',
+                    url:    '/frontend/chat/rooms/create-room',
+                    params: {checked: this.checked, roomName: this.roomName}
+                }).then((response) => {
+                    this.rooms = response.data.rooms;
+                });
+                eventBus.$emit('resetCheckedFriends');
+                this.roomName = '';
             },
 
         }

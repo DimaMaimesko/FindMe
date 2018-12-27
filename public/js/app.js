@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 13);
+/******/ 	return __webpack_require__(__webpack_require__.s = 14);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -70,7 +70,7 @@
 "use strict";
 
 
-var bind = __webpack_require__(6);
+var bind = __webpack_require__(7);
 var isBuffer = __webpack_require__(21);
 
 /*global toString:true*/
@@ -377,33 +377,6 @@ module.exports = {
 /* 1 */
 /***/ (function(module, exports) {
 
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
 /* globals __VUE_SSR_CONTEXT__ */
 
 // IMPORTANT: Do NOT use ES2015 features in this file.
@@ -510,7 +483,90 @@ module.exports = function normalizeComponent (
 
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
 /* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "eventBus", function() { return eventBus; });
+
+/**
+ * First we will load all of this project's JavaScript dependencies which
+ * includes Vue and other libraries. It is a great starting point when
+ * building robust, powerful web applications using Vue and Laravel.
+ */
+
+__webpack_require__(15);
+__webpack_require__(40);
+
+window.Vue = __webpack_require__(41);
+
+var eventBus = new Vue();
+
+/**
+ * The following block of code may be used to automatically register your
+ * Vue components. It will recursively scan this directory for the Vue
+ * components and automatically register them with their "basename".
+ *
+ * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
+ */
+
+Vue.component('example-component', __webpack_require__(44));
+Vue.component('users-table', __webpack_require__(47));
+
+Vue.component('chat-component', __webpack_require__(50));
+Vue.component('private-echo-chat-component', __webpack_require__(55));
+Vue.component('rooms-component', __webpack_require__(13));
+Vue.component('friends-for-room', __webpack_require__(58));
+Vue.component('members-in-room', __webpack_require__(61));
+
+// const files = require.context('./', true, /\.vue$/i)
+// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key)))
+
+/**
+ * Next, we will create a fresh Vue application instance and attach it to
+ * the page. Then, you may begin adding components to this application
+ * or customize the JavaScript scaffolding to fit your unique needs.
+ */
+
+var app = new Vue({
+  el: '#app'
+});
+
+//
+// $("[data-confirm]").click(function() {
+//     return confirm($(this).attr('data-confirm'));
+// });
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -533,10 +589,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(8);
+    adapter = __webpack_require__(9);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(8);
+    adapter = __webpack_require__(9);
   }
   return adapter;
 }
@@ -611,10 +667,10 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -3192,10 +3248,10 @@ Popper.Defaults = Defaults;
 /* harmony default export */ __webpack_exports__["default"] = (Popper);
 //# sourceMappingURL=popper.js.map
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2)))
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -13566,7 +13622,7 @@ return jQuery;
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13584,7 +13640,7 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -13774,7 +13830,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13785,7 +13841,7 @@ var settle = __webpack_require__(24);
 var buildURL = __webpack_require__(26);
 var parseHeaders = __webpack_require__(27);
 var isURLSameOrigin = __webpack_require__(28);
-var createError = __webpack_require__(9);
+var createError = __webpack_require__(10);
 var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(29);
 
 module.exports = function xhrAdapter(config) {
@@ -13961,7 +14017,7 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13986,7 +14042,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13998,7 +14054,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14024,11 +14080,11 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(1)
 /* script */
 var __vue_script__ = __webpack_require__(52)
 /* template */
@@ -14071,61 +14127,12 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(14);
-module.exports = __webpack_require__(58);
-
-
-/***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(3);
+module.exports = __webpack_require__(64);
 
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
-__webpack_require__(15);
-__webpack_require__(40);
-
-window.Vue = __webpack_require__(41);
-
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
-
-Vue.component('example-component', __webpack_require__(44));
-Vue.component('users-table', __webpack_require__(47));
-
-Vue.component('chat-component', __webpack_require__(50));
-Vue.component('private-echo-chat-component', __webpack_require__(55));
-Vue.component('rooms-component', __webpack_require__(12));
-
-// const files = require.context('./', true, /\.vue$/i)
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key)))
-
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
-
-var app = new Vue({
-  el: '#app'
-});
-
-//
-// $("[data-confirm]").click(function() {
-//     return confirm($(this).attr('data-confirm'));
-// });
 
 /***/ }),
 /* 15 */
@@ -14144,8 +14151,8 @@ window._ = __webpack_require__(16);
  */
 
 try {
-  window.Popper = __webpack_require__(4).default;
-  window.$ = window.jQuery = __webpack_require__(5);
+  window.Popper = __webpack_require__(5).default;
+  window.$ = window.jQuery = __webpack_require__(6);
 
   __webpack_require__(18);
 } catch (e) {}
@@ -31310,7 +31317,7 @@ window.Echo = new __WEBPACK_IMPORTED_MODULE_0_laravel_echo__["a" /* default */](
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(17)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(17)(module)))
 
 /***/ }),
 /* 17 */
@@ -31350,7 +31357,7 @@ module.exports = function(module) {
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-   true ? factory(exports, __webpack_require__(5), __webpack_require__(4)) :
+   true ? factory(exports, __webpack_require__(6), __webpack_require__(5)) :
   typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'popper.js'], factory) :
   (factory((global.bootstrap = {}),global.jQuery,global.Popper));
 }(this, (function (exports,$,Popper) { 'use strict';
@@ -35304,9 +35311,9 @@ module.exports = __webpack_require__(20);
 
 
 var utils = __webpack_require__(0);
-var bind = __webpack_require__(6);
+var bind = __webpack_require__(7);
 var Axios = __webpack_require__(22);
-var defaults = __webpack_require__(3);
+var defaults = __webpack_require__(4);
 
 /**
  * Create an instance of Axios
@@ -35339,9 +35346,9 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(11);
+axios.Cancel = __webpack_require__(12);
 axios.CancelToken = __webpack_require__(36);
-axios.isCancel = __webpack_require__(10);
+axios.isCancel = __webpack_require__(11);
 
 // Expose all/spread
 axios.all = function all(promises) {
@@ -35389,7 +35396,7 @@ function isSlowBuffer (obj) {
 "use strict";
 
 
-var defaults = __webpack_require__(3);
+var defaults = __webpack_require__(4);
 var utils = __webpack_require__(0);
 var InterceptorManager = __webpack_require__(31);
 var dispatchRequest = __webpack_require__(32);
@@ -35494,7 +35501,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 "use strict";
 
 
-var createError = __webpack_require__(9);
+var createError = __webpack_require__(10);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -35927,8 +35934,8 @@ module.exports = InterceptorManager;
 
 var utils = __webpack_require__(0);
 var transformData = __webpack_require__(33);
-var isCancel = __webpack_require__(10);
-var defaults = __webpack_require__(3);
+var isCancel = __webpack_require__(11);
+var defaults = __webpack_require__(4);
 var isAbsoluteURL = __webpack_require__(34);
 var combineURLs = __webpack_require__(35);
 
@@ -36087,7 +36094,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 "use strict";
 
 
-var Cancel = __webpack_require__(11);
+var Cancel = __webpack_require__(12);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -57370,7 +57377,7 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(42).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(42).setImmediate))
 
 /***/ }),
 /* 42 */
@@ -57440,7 +57447,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
                          (typeof global !== "undefined" && global.clearImmediate) ||
                          (this && this.clearImmediate);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
 /* 43 */
@@ -57633,14 +57640,14 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(7)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(8)))
 
 /***/ }),
 /* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(1)
 /* script */
 var __vue_script__ = __webpack_require__(45)
 /* template */
@@ -57759,7 +57766,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(1)
 /* script */
 var __vue_script__ = __webpack_require__(48)
 /* template */
@@ -57853,6 +57860,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
@@ -57860,7 +57889,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     data: function data() {
         return {
             followeesReactive: [],
-            routeName: "/frontend/main"
+            usersReactive: [],
+            routeName: "/frontend/main",
+            pickedGroup: 'all'
         };
     },
     methods: {
@@ -57870,11 +57901,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             axios({
                 method: 'post',
                 url: '/frontend/home/follow',
-                params: { id: id }
+                params: { id: id, pickedGroup: this.pickedGroup }
             }).then(function (response) {
+                _this.usersReactive = response.data.users;
+                console.log(_this.usersReactive);
                 _this.followeesReactive = response.data.followees.map(function (strVal) {
                     return Number(strVal);
                 });
+                _this.getUsers();
             });
         },
         unfollow: function unfollow(id) {
@@ -57883,11 +57917,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             axios({
                 method: 'post',
                 url: '/frontend/home/unfollow',
-                params: { id: id }
+                params: { id: id, pickedGroup: this.pickedGroup }
             }).then(function (response) {
                 _this2.followeesReactive = response.data.followees.map(function (strVal) {
                     return Number(strVal);
                 });
+                _this2.getUsers();
+            });
+        },
+        getUsers: function getUsers() {
+            var _this3 = this;
+
+            axios({
+                method: 'post',
+                url: '/frontend/home/get-users',
+                params: { pickedGroup: this.pickedGroup }
+            }).then(function (response) {
+                _this3.usersReactive = response.data.users;
             });
         }
     },
@@ -57895,6 +57941,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         this.followeesReactive = this.followees.map(function (strVal) {
             return Number(strVal);
         });
+        this.usersReactive = this.users;
         console.log(this.followeesReactive);
     }
 });
@@ -57922,6 +57969,130 @@ var render = function() {
             )
           ]),
           _vm._v(" "),
+          _c("div", { staticClass: "d-flex justify-content-around" }, [
+            _c(
+              "div",
+              { staticClass: "d-flex flex-column justify-content-around" },
+              [
+                _c("label", { attrs: { for: "all" } }, [_vm._v("All")]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.pickedGroup,
+                      expression: "pickedGroup"
+                    }
+                  ],
+                  attrs: { type: "radio", id: "all", value: "all" },
+                  domProps: { checked: _vm._q(_vm.pickedGroup, "all") },
+                  on: {
+                    change: [
+                      function($event) {
+                        _vm.pickedGroup = "all"
+                      },
+                      _vm.getUsers
+                    ]
+                  }
+                })
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "d-flex flex-column justify-content-around" },
+              [
+                _c("label", { attrs: { for: "friends" } }, [_vm._v("Friends")]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.pickedGroup,
+                      expression: "pickedGroup"
+                    }
+                  ],
+                  attrs: { type: "radio", id: "friends", value: "friends" },
+                  domProps: { checked: _vm._q(_vm.pickedGroup, "friends") },
+                  on: {
+                    change: [
+                      function($event) {
+                        _vm.pickedGroup = "friends"
+                      },
+                      _vm.getUsers
+                    ]
+                  }
+                })
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "d-flex flex-column justify-content-around" },
+              [
+                _c("label", { attrs: { for: "followers" } }, [
+                  _vm._v("Followers")
+                ]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.pickedGroup,
+                      expression: "pickedGroup"
+                    }
+                  ],
+                  attrs: { type: "radio", id: "followers", value: "followers" },
+                  domProps: { checked: _vm._q(_vm.pickedGroup, "followers") },
+                  on: {
+                    change: [
+                      function($event) {
+                        _vm.pickedGroup = "followers"
+                      },
+                      _vm.getUsers
+                    ]
+                  }
+                })
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "d-flex flex-column justify-content-around" },
+              [
+                _c("label", { attrs: { for: "followees" } }, [
+                  _vm._v("Followees")
+                ]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.pickedGroup,
+                      expression: "pickedGroup"
+                    }
+                  ],
+                  attrs: { type: "radio", id: "followees", value: "followees" },
+                  domProps: { checked: _vm._q(_vm.pickedGroup, "followees") },
+                  on: {
+                    change: [
+                      function($event) {
+                        _vm.pickedGroup = "followees"
+                      },
+                      _vm.getUsers
+                    ]
+                  }
+                })
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("span", [_vm._v("Picked: " + _vm._s(_vm.pickedGroup))]),
+          _vm._v(" "),
           _c("div", { staticClass: "card-header" }, [_vm._v("All Users")]),
           _vm._v(" "),
           _c("div", { staticClass: "card-body" }, [
@@ -57930,7 +58101,7 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "tbody",
-                _vm._l(_vm.users, function(user) {
+                _vm._l(_vm.usersReactive, function(user) {
                   return _vm.authUserId != user.id
                     ? _c("tr", [
                         _c("td", [
@@ -58023,7 +58194,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(1)
 /* script */
 var __vue_script__ = __webpack_require__(51)
 /* template */
@@ -58071,7 +58242,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RoomsComponent__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RoomsComponent__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RoomsComponent___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__RoomsComponent__);
 //
 //
@@ -58120,6 +58291,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(3);
 //
 //
 //
@@ -58158,35 +58330,90 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-
     props: {},
 
     data: function data() {
         return {
-            selectedRoom: '',
-            roomName: ''
+            selectedRoom: {},
+            rooms: [],
+            members: [],
+            roomName: '',
+            friends: [],
+            checked: []
         };
     },
     computed: {},
 
-    mounted: function mounted() {},
+    mounted: function mounted() {
+        this.getRooms();
+    },
 
 
     methods: {
+
+        getRooms: function getRooms() {
+            var _this = this;
+
+            axios({
+                method: 'get',
+                url: '/frontend/chat/rooms/get-rooms'
+            }).then(function (response) {
+                _this.rooms = response.data.rooms;
+            });
+        },
+        roomChanged: function roomChanged() {
+            var _this2 = this;
+
+            console.log(this.selectedRoom);
+            axios({
+                method: 'get',
+                url: '/frontend/chat/rooms/get-members',
+                params: { room_id: this.selectedRoom.id }
+            }).then(function (response) {
+                _this2.members = response.data.members;
+                console.log(_this2.members);
+            });
+        },
+
         createRoom: function createRoom() {
-            alert("Created!");
-            // axios({
-            //     method: 'post',
-            //     url:    '/frontend/chat/rooms/create',
-            //     params: {message: this.message, room_id: this.room}
-            // }).then((response) => {
-            //     console.log('Data: '+response.data);
-            // });
-            // this.allMessages.push(this.message)
-            // this.message = '';
+            var _this3 = this;
+
+            axios({
+                method: 'post',
+                url: '/frontend/chat/rooms/create-room',
+                params: { checked: this.checked, roomName: this.roomName }
+            }).then(function (response) {
+                _this3.rooms = response.data.rooms;
+            });
+            __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('resetCheckedFriends');
+            this.roomName = '';
         }
 
     }
@@ -58223,36 +58450,67 @@ var render = function() {
             }
           ],
           on: {
-            change: function($event) {
-              var $$selectedVal = Array.prototype.filter
-                .call($event.target.options, function(o) {
-                  return o.selected
-                })
-                .map(function(o) {
-                  var val = "_value" in o ? o._value : o.value
-                  return val
-                })
-              _vm.selectedRoom = $event.target.multiple
-                ? $$selectedVal
-                : $$selectedVal[0]
-            }
+            change: [
+              function($event) {
+                var $$selectedVal = Array.prototype.filter
+                  .call($event.target.options, function(o) {
+                    return o.selected
+                  })
+                  .map(function(o) {
+                    var val = "_value" in o ? o._value : o.value
+                    return val
+                  })
+                _vm.selectedRoom = $event.target.multiple
+                  ? $$selectedVal
+                  : $$selectedVal[0]
+              },
+              _vm.roomChanged
+            ]
           }
         },
         [
           _c("option", { attrs: { disabled: "", value: "" } }, [
-            _vm._v("Please select one")
+            _vm._v("Please select room")
           ]),
           _vm._v(" "),
-          _c("option", [_vm._v("Room1")]),
-          _vm._v(" "),
-          _c("option", [_vm._v("Room2")]),
-          _vm._v(" "),
-          _c("option", [_vm._v("Room3")])
-        ]
+          _vm._l(_vm.rooms, function(room) {
+            return _c("option", { domProps: { value: room } }, [
+              _vm._v(_vm._s(room.name))
+            ])
+          })
+        ],
+        2
       ),
       _c("br"),
       _vm._v(" "),
-      _c("span", [_vm._v("Selected: " + _vm._s(_vm.selectedRoom))]),
+      _c("div", { staticClass: "card-header" }, [
+        _vm._v("Room name: " + _vm._s(_vm.selectedRoom.name))
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "card-body" }, [
+        _c("table", { staticClass: "table table-bordered table-striped" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "tbody",
+            _vm._l(_vm.members, function(member) {
+              return _c("tr", [
+                _c("td", [
+                  _c("a", { attrs: { href: member.photo } }, [
+                    _c("img", {
+                      staticStyle: { width: "100%" },
+                      attrs: { src: member.thumbnail, alt: "Photo" }
+                    })
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(member.name))])
+              ])
+            }),
+            0
+          )
+        ])
+      ]),
       _vm._v(" "),
       _c(
         "div",
@@ -58272,32 +58530,43 @@ var render = function() {
             { staticClass: "modal-dialog", attrs: { role: "document" } },
             [
               _c("div", { staticClass: "modal-content" }, [
-                _vm._m(0),
+                _vm._m(1),
                 _vm._v(" "),
-                _c("div", { staticClass: "modal-body" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.roomName,
-                        expression: "roomName"
-                      }
-                    ],
-                    attrs: { placeholder: "Room name" },
-                    domProps: { value: _vm.roomName },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
+                _c(
+                  "div",
+                  { staticClass: "modal-body" },
+                  [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.roomName,
+                          expression: "roomName"
                         }
-                        _vm.roomName = $event.target.value
+                      ],
+                      attrs: { placeholder: "Room name" },
+                      domProps: { value: _vm.roomName },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.roomName = $event.target.value
+                        }
                       }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("p", [_vm._v("Message is: " + _vm._s(_vm.roomName))])
-                ]),
+                    }),
+                    _vm._v(" "),
+                    _c("friends-for-room", {
+                      on: {
+                        friendsList: function($event) {
+                          _vm.checked = $event
+                        }
+                      }
+                    })
+                  ],
+                  1
+                ),
                 _vm._v(" "),
                 _c("div", { staticClass: "modal-footer" }, [
                   _c(
@@ -58332,6 +58601,18 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", { staticStyle: { width: "100px" } }, [_vm._v("Photo")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Name")])
+      ])
+    ])
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -58431,7 +58712,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(1)
 /* script */
 var __vue_script__ = __webpack_require__(56)
 /* template */
@@ -58702,6 +58983,544 @@ if (false) {
 
 /***/ }),
 /* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(59)
+/* template */
+var __vue_template__ = __webpack_require__(60)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/chat/FriendsForRoom.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-654624ab", Component.options)
+  } else {
+    hotAPI.reload("data-v-654624ab", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 59 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(3);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+
+    props: [],
+    data: function data() {
+        return {
+            friends: [],
+            checked: [],
+            checkedFull: []
+        };
+    },
+    methods: {
+        getFriends: function getFriends() {
+            var _this = this;
+
+            axios({
+                method: 'get',
+                url: '/frontend/chat/rooms/get-friends'
+            }).then(function (response) {
+                _this.friends = response.data.friends;
+                console.log(_this.friends);
+            });
+        },
+
+        changed: function changed(checkedFull) {
+            var _this2 = this;
+
+            checkedFull.forEach(function (item, i) {
+                if (item === true) {
+                    _this2.checked[i] = item;
+                } else {
+                    _this2.checked[i] = false;
+                }
+            });
+            console.log(this.checked);
+            this.$emit('friendsList', this.checked);
+        }
+    },
+    mounted: function mounted() {
+        this.getFriends();
+    },
+    created: function created() {
+        var _this3 = this;
+
+        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('resetCheckedFriends', function () {
+            _this3.checkedFull = [];
+            _this3.checked = [];
+        });
+    }
+});
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "container" }, [
+    _c("div", { staticClass: "row justify-content-center" }, [
+      _c("div", { staticClass: "col-md-12" }, [
+        _c("div", { staticClass: "card card-default" }, [
+          _c("div", { staticClass: "card-header" }, [_vm._v("Add friends:")]),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-body" }, [
+            _c("table", { staticClass: "table table-bordered table-striped" }, [
+              _vm._m(0),
+              _vm._v(" "),
+              _c(
+                "tbody",
+                _vm._l(_vm.friends, function(friend) {
+                  return _c("tr", [
+                    _c("td", [
+                      _c("a", { attrs: { href: friend.photo } }, [
+                        _c("img", {
+                          staticStyle: { width: "100%" },
+                          attrs: { src: friend.thumbnail, alt: "Photo" }
+                        })
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(friend.name))]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.checkedFull[friend.id],
+                            expression: "checkedFull[friend.id]"
+                          }
+                        ],
+                        attrs: { type: "checkbox" },
+                        domProps: {
+                          checked: Array.isArray(_vm.checkedFull[friend.id])
+                            ? _vm._i(_vm.checkedFull[friend.id], null) > -1
+                            : _vm.checkedFull[friend.id]
+                        },
+                        on: {
+                          change: [
+                            function($event) {
+                              var $$a = _vm.checkedFull[friend.id],
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = null,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    _vm.$set(
+                                      _vm.checkedFull,
+                                      friend.id,
+                                      $$a.concat([$$v])
+                                    )
+                                } else {
+                                  $$i > -1 &&
+                                    _vm.$set(
+                                      _vm.checkedFull,
+                                      friend.id,
+                                      $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1))
+                                    )
+                                }
+                              } else {
+                                _vm.$set(_vm.checkedFull, friend.id, $$c)
+                              }
+                            },
+                            function($event) {
+                              _vm.changed(_vm.checkedFull)
+                            }
+                          ]
+                        }
+                      })
+                    ])
+                  ])
+                }),
+                0
+              )
+            ])
+          ])
+        ])
+      ])
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", { staticStyle: { width: "100px" } }, [_vm._v("Photo")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Name")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("add")])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-654624ab", module.exports)
+  }
+}
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(62)
+/* template */
+var __vue_template__ = __webpack_require__(63)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/chat/MembersInRoom.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-4c5d600d", Component.options)
+  } else {
+    hotAPI.reload("data-v-4c5d600d", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(3);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+
+    props: [],
+    data: function data() {
+        return {
+            friends: [],
+            checked: [],
+            checkedFull: []
+        };
+    },
+    methods: {
+        getFriends: function getFriends() {
+            var _this = this;
+
+            axios({
+                method: 'get',
+                url: '/frontend/chat/rooms/get-friends'
+            }).then(function (response) {
+                _this.friends = response.data.friends;
+                console.log(_this.friends);
+            });
+        },
+
+        changed: function changed(checkedFull) {
+            var _this2 = this;
+
+            checkedFull.forEach(function (item, i) {
+                if (item === true) {
+                    _this2.checked[i] = item;
+                } else {
+                    _this2.checked[i] = false;
+                }
+            });
+            console.log(this.checked);
+            this.$emit('friendsList', this.checked);
+        }
+    },
+    mounted: function mounted() {
+        this.getFriends();
+    },
+    created: function created() {
+        var _this3 = this;
+
+        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('resetCheckedFriends', function () {
+            _this3.checkedFull = [];
+            _this3.checked = [];
+        });
+    }
+});
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "container" }, [
+    _c("div", { staticClass: "row justify-content-center" }, [
+      _c("div", { staticClass: "col-md-12" }, [
+        _c("div", { staticClass: "card card-default" }, [
+          _c("div", { staticClass: "card-header" }, [_vm._v("Add friends:")]),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-body" }, [
+            _c("table", { staticClass: "table table-bordered table-striped" }, [
+              _vm._m(0),
+              _vm._v(" "),
+              _c(
+                "tbody",
+                _vm._l(_vm.friends, function(friend) {
+                  return _c("tr", [
+                    _c("td", [
+                      _c("a", { attrs: { href: friend.photo } }, [
+                        _c("img", {
+                          staticStyle: { width: "100%" },
+                          attrs: { src: friend.thumbnail, alt: "Photo" }
+                        })
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(friend.name))]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.checkedFull[friend.id],
+                            expression: "checkedFull[friend.id]"
+                          }
+                        ],
+                        attrs: { type: "checkbox" },
+                        domProps: {
+                          checked: Array.isArray(_vm.checkedFull[friend.id])
+                            ? _vm._i(_vm.checkedFull[friend.id], null) > -1
+                            : _vm.checkedFull[friend.id]
+                        },
+                        on: {
+                          change: [
+                            function($event) {
+                              var $$a = _vm.checkedFull[friend.id],
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = null,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    _vm.$set(
+                                      _vm.checkedFull,
+                                      friend.id,
+                                      $$a.concat([$$v])
+                                    )
+                                } else {
+                                  $$i > -1 &&
+                                    _vm.$set(
+                                      _vm.checkedFull,
+                                      friend.id,
+                                      $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1))
+                                    )
+                                }
+                              } else {
+                                _vm.$set(_vm.checkedFull, friend.id, $$c)
+                              }
+                            },
+                            function($event) {
+                              _vm.changed(_vm.checkedFull)
+                            }
+                          ]
+                        }
+                      })
+                    ])
+                  ])
+                }),
+                0
+              )
+            ])
+          ])
+        ])
+      ])
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", { staticStyle: { width: "100px" } }, [_vm._v("Photo")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Name")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("add")])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-4c5d600d", module.exports)
+  }
+}
+
+/***/ }),
+/* 64 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

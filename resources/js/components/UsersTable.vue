@@ -6,6 +6,27 @@
                     <div class="text-center">
                         <a :href="routeName" class="btn btn-success text-uppercase">My Page</a>
                     </div>
+
+                    <div class="d-flex justify-content-around">
+                        <div class="d-flex flex-column justify-content-around">
+                            <label for="all">All</label>
+                            <input @change="getUsers" type="radio" id="all" value="all" v-model="pickedGroup">
+                        </div>
+                        <div class="d-flex flex-column justify-content-around">
+                            <label for="friends">Friends</label>
+                            <input @change="getUsers"type="radio" id="friends" value="friends" v-model="pickedGroup">
+                        </div>
+                        <div class="d-flex flex-column justify-content-around">
+                            <label for="followers">Followers</label>
+                            <input @change="getUsers" type="radio" id="followers" value="followers" v-model="pickedGroup">
+                        </div>
+                        <div class="d-flex flex-column justify-content-around">
+                            <label for="followees">Followees</label>
+                            <input @change="getUsers" type="radio" id="followees" value="followees" v-model="pickedGroup">
+                        </div>
+                    </div>
+                    <span>Picked: {{ pickedGroup }}</span>
+
                     <div class="card-header">All Users</div>
                     <div class="card-body">
 
@@ -20,7 +41,8 @@
                             </thead>
                             <tbody>
 
-                            <tr v-for="user in users" v-if="authUserId != user.id ">
+
+                            <tr v-for="user in usersReactive" v-if="authUserId != user.id ">
                                 <td>
                                     <a :href="user.photo">
                                         <img :src="user.thumbnail" alt="Photo" style="width:100%">
@@ -55,7 +77,9 @@
         data: function(){
             return {
                 followeesReactive: [],
-                routeName: "/frontend/main"
+                usersReactive: [],
+                routeName: "/frontend/main",
+                pickedGroup: 'all',
             }
         },
         methods: {
@@ -63,22 +87,35 @@
                axios({
                    method: 'post',
                    url:    '/frontend/home/follow',
-                   params: {id: id}
+                   params: {id: id, pickedGroup: this.pickedGroup}
                }).then((response) => {
+                   this.usersReactive = response.data.users;
+                   console.log(this.usersReactive);
                    this.followeesReactive = response.data.followees.map(function (strVal) {
                        return Number(strVal);
                    });
+                   this.getUsers();
                });
            },
             unfollow: function (id) {
                 axios({
                     method: 'post',
                     url:    '/frontend/home/unfollow',
-                    params: {id: id}
+                    params: {id: id, pickedGroup: this.pickedGroup}
                 }).then((response) => {
                     this.followeesReactive = response.data.followees.map(function (strVal) {
                         return Number(strVal);
                     });
+                    this.getUsers();
+                });
+            },
+            getUsers: function () {
+                axios({
+                    method: 'post',
+                    url:    '/frontend/home/get-users',
+                    params: {pickedGroup: this.pickedGroup}
+                }).then((response) => {
+                    this.usersReactive = response.data.users;
                 });
             },
         },
@@ -86,6 +123,7 @@
             this.followeesReactive = this.followees.map(function (strVal) {
                 return Number(strVal);
             });
+            this.usersReactive = this.users;
             console.log(this.followeesReactive);
         }
     }

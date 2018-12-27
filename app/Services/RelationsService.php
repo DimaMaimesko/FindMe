@@ -19,8 +19,10 @@ class RelationsService
        Redis::sadd('followers:'.$id, Auth::id());
        if ($this->isMyFriend($id)){
            Redis::sadd('friends:'.Auth::id(), $id);
+           Redis::sadd('friends:'.$id, Auth::id());
        }else{
            Redis::srem('friends:'.Auth::id(), $id);
+           Redis::srem('friends:'.$id, Auth::id());
        }
    }
 
@@ -30,8 +32,10 @@ class RelationsService
      Redis::srem('followers:'.$id, Auth::id());
        if ($this->isMyFriend($id)){
            Redis::sadd('friends:'.Auth::id(), $id);
+           Redis::sadd('friends:'.$id, Auth::id());
        }else{
            Redis::srem('friends:'.Auth::id(), $id);
+           Redis::srem('friends:'.$id, Auth::id());
        }
    }
 
@@ -52,17 +56,17 @@ class RelationsService
 
    private function isMyFollowee($id)
    {
-       Redis::sismember('followees:'.Auth::id(), $id);
+      return Redis::sismember('followees:'.Auth::id(), $id);
    }
 
    private function isMyFollower($id)
    {
-       Redis::sismember('followers:'.Auth::id(), $id);
+      return  Redis::sismember('followers:'.Auth::id(), $id);
    }
 
    private function isMyFriend($id)
    {
-       if($this->isMyFollowee($id) && $this->isMyFollower($id)){
+       if(($this->isMyFollowee($id) == 1) && ($this->isMyFollower($id) == 1)){
            return true;
        }else{
            return false;

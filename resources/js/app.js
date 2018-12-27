@@ -10,6 +10,8 @@ require('./MyScripts');
 
 window.Vue = require('vue');
 
+export const eventBus = new Vue();
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -24,6 +26,8 @@ Vue.component('users-table', require('./components/UsersTable.vue'));
 Vue.component('chat-component', require('./components/chat/ChatComponent.vue'));
 Vue.component('private-echo-chat-component', require('./components/chat/PrivateEchoChatComponent.vue'));
 Vue.component('rooms-component', require('./components/chat/RoomsComponent.vue'));
+Vue.component('friends-for-room', require('./components/chat/FriendsForRoom.vue'));
+Vue.component('members-in-room', require('./components/chat/MembersInRoom.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key)))

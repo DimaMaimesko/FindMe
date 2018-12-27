@@ -28,12 +28,47 @@ class HomeController extends Controller
         ]);
     }
 
+    public function getUsers(Request $request)
+    {
+        $pickedGroup = $request->get('pickedGroup');
+        if ($pickedGroup == 'all'){
+            $users = User::all()->toArray();
+            return ['users' => $users];
+        }
+        if ($pickedGroup == 'friends'){
+            $ids = $this->relations->getFriendsIdsOf(Auth::id());
+            if (!empty($ids)){
+                $users = User::whereIn('id', $ids)->get()->toArray();
+                return ['users' => $users];
+            }else{
+                return ['users' => []];
+            }
+        }
+        if ($pickedGroup == 'followers'){
+            $ids = $this->relations->getFollowersIdsOf(Auth::id());
+            if (!empty($ids)){
+                $users = User::whereIn('id', $ids)->get()->toArray();
+                return ['users' => $users];
+            }else{
+                return ['users' => []];
+            }
+        }
+        if ($pickedGroup == 'followees'){
+            $ids = $this->relations->getFolloweesIdsOf(Auth::id());
+            if (!empty($ids)){
+                $users = User::whereIn('id', $ids)->get()->toArray();
+                return ['users' => $users];
+            }else{
+                return ['users' => []];
+            }
+        }
+    }
+
 
     public function follow(Request $request)
     {
        $this->relations->follow($request->get('id'));
        return ['followees' => $this->relations->getFolloweesIdsOf(Auth::id())];
-
     }
 
 
@@ -41,6 +76,5 @@ class HomeController extends Controller
     {
         $this->relations->unfollow($request->get('id'));
         return ['followees' => $this->relations->getFolloweesIdsOf(Auth::id())];
-
     }
 }
