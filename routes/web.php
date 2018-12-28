@@ -49,9 +49,12 @@ Route::group([
     Route::post('/chat/send', 'Chat\ChatController@sendMessage')->name('chat.send');
     Route::post('/chat/rooms/create', 'Chat\RoomsController@create')->name('chat.rooms.create');
     Route::post('/chat/rooms/create-room', 'Chat\RoomsController@createRoom')->name('chat.rooms.create.room');
+    Route::put('/chat/rooms/update-room', 'Chat\RoomsController@updateRoom')->name('chat.rooms.update.room');
+    Route::delete('/chat/rooms/delete-room', 'Chat\RoomsController@deleteRoom')->name('chat.rooms.delete.room');
     Route::get('/chat/rooms/get-rooms', 'Chat\RoomsController@getRooms')->name('chat.rooms.get');
     Route::get('/chat/rooms/get-members', 'Chat\RoomsController@getMembers')->name('chat.rooms.get-members');
     Route::get('/chat/rooms/get-friends', 'Chat\RoomsController@getFriends')->name('chat.rooms.get-friends');
+    Route::get('/chat/rooms/get-members-friends', 'Chat\RoomsController@getMembersFriends')->name('chat.rooms.get-members-friends');
 
 });
 

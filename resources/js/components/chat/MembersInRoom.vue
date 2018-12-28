@@ -25,7 +25,9 @@
                                 </td>
                                 <td>{{ friend.name }}</td>
                                 <td>
-                                    <input @change="changed(checkedFull)"  v-model="checkedFull[friend.id]"  type="checkbox">
+                                    <input
+                                           @change="changed(checkedAfter[friend.id], friend.id)"
+                                           v-model="checkedAfter[friend.id]" type="checkbox">
                                 </td>
                             </tr>
 
@@ -44,46 +46,71 @@
     export default {
 
         props: [
+            'roomId',
         ],
+
         data: function(){
             return {
                 friends: [],
                 checked: [],
-                checkedFull: [],
+                checkedAfter: [],
             }
         },
         methods: {
-            getFriends: function () {
+            getMembersFriends:  function(id) {
+                console.log(id);
                 axios({
                     method: 'get',
-                    url:    '/frontend/chat/rooms/get-friends',
+                    url:    '/frontend/chat/rooms/get-members-friends',
+                    params: {room_id: id}
                 }).then((response) => {
-                    this.friends = response.data.friends;
-                    console.log(this.friends);
+                    this.friends = response.data.friends.friends;
+                    this.checked = response.data.checked;
+                    this.checkedAfter = [];
+                    this.checked.forEach((item, i) => {
+                        this.checkedAfter[item] = true;
+                    });
+                    console.log('checked');
+                    console.log(this.checked);
                 });
             },
-
-            changed: function (checkedFull) {
-
-                checkedFull.forEach((item, i) => {
-                    if ((item === true)){
-                       this.checked[i] = item;
-                    }else{
-                        this.checked[i] = false;
+            changed: function (value, id) {
+                if (this.checked.includes(id)){
+                    if (value == false){
+                        let index = this.checked.indexOf(id);
+                        if (index > -1) {
+                            this.checked.splice(index, 1);
+                        }
                     }
-                });
-               console.log(this.checked);
-               this.$emit('friendsList', this.checked);
+                }else{
+                    if (value == true){
+                        this.checked.push(id)
+                    }
+                }
+                //this.checkedAfter = this.checked;
+                console.log("Checked" + this.checked);
+                this.$emit('membersChanged', this.checked);
             }
+
+
         },
         mounted() {
-            this.getFriends();
+
+
+
         },
         created() {
-            eventBus.$on('resetCheckedFriends', ()=>{
-                this.checkedFull = [];
-                this.checked = [];
-            })
+            eventBus.$on('roomChanged',  (id)=> {
+                this.getMembersFriends(id);
+
+
+                // console.log('checked');
+                // console.log(this.checked);
+                // console.log('checkedAfter');
+                // console.log(this.checkedAfter);
+
+            });
+
         }
     }
 </script>

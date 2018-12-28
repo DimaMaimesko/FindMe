@@ -58353,6 +58353,33 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -58366,10 +58393,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             members: [],
             roomName: '',
             friends: [],
-            checked: []
+            checked: [],
+            checkedForUpdating: [],
+            flag: false
         };
     },
     computed: {},
+    watch: {
+        flag: function flag() {
+            __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('getMembersFriends');
+        }
+    },
 
     mounted: function mounted() {
         this.getRooms();
@@ -58388,17 +58422,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this.rooms = response.data.rooms;
             });
         },
-        roomChanged: function roomChanged() {
+        roomChanged: function roomChanged(id) {
             var _this2 = this;
 
-            console.log(this.selectedRoom);
             axios({
                 method: 'get',
                 url: '/frontend/chat/rooms/get-members',
                 params: { room_id: this.selectedRoom.id }
             }).then(function (response) {
                 _this2.members = response.data.members;
-                console.log(_this2.members);
+                __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('roomChanged', id);
             });
         },
 
@@ -58414,6 +58447,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
             __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('resetCheckedFriends');
             this.roomName = '';
+        },
+
+        updateRoom: function updateRoom(checked) {
+            axios({
+                method: 'put',
+                url: '/frontend/chat/rooms/update-room',
+                params: { checked: checked, room_id: this.selectedRoom.id }
+            }).then(function (response) {
+                console.log(response.data.updatedMembersIds);
+            });
+        },
+        deleteRoom: function deleteRoom(checked) {
+            var _this4 = this;
+
+            axios({
+                method: 'delete',
+                url: '/frontend/chat/rooms/delete-room',
+                params: { checked: checked, room_id: this.selectedRoom.id }
+            }).then(function (response) {
+                _this4.rooms = response.data.rooms;
+            });
         }
 
     }
@@ -58433,94 +58487,20 @@ var render = function() {
         "button",
         {
           staticClass: "btn btn-success",
-          attrs: { "data-toggle": "modal", "data-target": "#exampleModal" }
+          attrs: { "data-toggle": "modal", "data-target": "#createModal" }
         },
         [_vm._v("Create New Room")]
       ),
-      _vm._v(" "),
-      _c(
-        "select",
-        {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.selectedRoom,
-              expression: "selectedRoom"
-            }
-          ],
-          on: {
-            change: [
-              function($event) {
-                var $$selectedVal = Array.prototype.filter
-                  .call($event.target.options, function(o) {
-                    return o.selected
-                  })
-                  .map(function(o) {
-                    var val = "_value" in o ? o._value : o.value
-                    return val
-                  })
-                _vm.selectedRoom = $event.target.multiple
-                  ? $$selectedVal
-                  : $$selectedVal[0]
-              },
-              _vm.roomChanged
-            ]
-          }
-        },
-        [
-          _c("option", { attrs: { disabled: "", value: "" } }, [
-            _vm._v("Please select room")
-          ]),
-          _vm._v(" "),
-          _vm._l(_vm.rooms, function(room) {
-            return _c("option", { domProps: { value: room } }, [
-              _vm._v(_vm._s(room.name))
-            ])
-          })
-        ],
-        2
-      ),
-      _c("br"),
-      _vm._v(" "),
-      _c("div", { staticClass: "card-header" }, [
-        _vm._v("Room name: " + _vm._s(_vm.selectedRoom.name))
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "card-body" }, [
-        _c("table", { staticClass: "table table-bordered table-striped" }, [
-          _vm._m(0),
-          _vm._v(" "),
-          _c(
-            "tbody",
-            _vm._l(_vm.members, function(member) {
-              return _c("tr", [
-                _c("td", [
-                  _c("a", { attrs: { href: member.photo } }, [
-                    _c("img", {
-                      staticStyle: { width: "100%" },
-                      attrs: { src: member.thumbnail, alt: "Photo" }
-                    })
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(member.name))])
-              ])
-            }),
-            0
-          )
-        ])
-      ]),
       _vm._v(" "),
       _c(
         "div",
         {
           staticClass: "modal fade",
           attrs: {
-            id: "exampleModal",
+            id: "createModal",
             tabindex: "-1",
             role: "dialog",
-            "aria-labelledby": "exampleModalLabel",
+            "aria-labelledby": "createModalLabel",
             "aria-hidden": "true"
           }
         },
@@ -58530,7 +58510,7 @@ var render = function() {
             { staticClass: "modal-dialog", attrs: { role: "document" } },
             [
               _c("div", { staticClass: "modal-content" }, [
-                _vm._m(1),
+                _vm._m(0),
                 _vm._v(" "),
                 _c(
                   "div",
@@ -58596,7 +58576,196 @@ var render = function() {
             ]
           )
         ]
-      )
+      ),
+      _vm._v(" "),
+      _vm.selectedRoom.hasOwnProperty("name")
+        ? _c(
+            "button",
+            {
+              staticClass: "btn btn-info",
+              attrs: { "data-toggle": "modal", "data-target": "#editModal" },
+              on: {
+                click: function($event) {
+                  _vm.flag = !_vm.flag
+                }
+              }
+            },
+            [_vm._v("Edit Room")]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "modal fade",
+          attrs: {
+            id: "editModal",
+            tabindex: "-1",
+            role: "dialog",
+            "aria-labelledby": "editModalLabel",
+            "aria-hidden": "true"
+          }
+        },
+        [
+          _c(
+            "div",
+            { staticClass: "modal-dialog", attrs: { role: "document" } },
+            [
+              _c("div", { staticClass: "modal-content" }, [
+                _c("div", { staticClass: "modal-header" }, [
+                  _c(
+                    "h5",
+                    {
+                      staticClass: "modal-title",
+                      attrs: { id: "editModalLabel" }
+                    },
+                    [
+                      _vm._v("Edit Chat Room "),
+                      _c("strong", [_vm._v(_vm._s(_vm.selectedRoom.name))])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _vm._m(1)
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "modal-body" },
+                  [
+                    _vm.selectedRoom.hasOwnProperty("id")
+                      ? _c("members-in-room", {
+                          on: {
+                            membersChanged: function($event) {
+                              _vm.checkedForUpdating = $event
+                            }
+                          }
+                        })
+                      : _vm._e()
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "modal-footer" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-secondary",
+                      attrs: { type: "button", "data-dismiss": "modal" }
+                    },
+                    [_vm._v("Cancel")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-danger",
+                      attrs: { type: "button", "data-dismiss": "modal" },
+                      on: { click: _vm.deleteRoom }
+                    },
+                    [_vm._v("Delete")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "button", "data-dismiss": "modal" },
+                      on: {
+                        click: function($event) {
+                          _vm.updateRoom(_vm.checkedForUpdating)
+                        }
+                      }
+                    },
+                    [_vm._v("Update")]
+                  )
+                ])
+              ])
+            ]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "select",
+        {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.selectedRoom,
+              expression: "selectedRoom"
+            }
+          ],
+          on: {
+            change: [
+              function($event) {
+                var $$selectedVal = Array.prototype.filter
+                  .call($event.target.options, function(o) {
+                    return o.selected
+                  })
+                  .map(function(o) {
+                    var val = "_value" in o ? o._value : o.value
+                    return val
+                  })
+                _vm.selectedRoom = $event.target.multiple
+                  ? $$selectedVal
+                  : $$selectedVal[0]
+              },
+              function($event) {
+                _vm.roomChanged(_vm.selectedRoom.id)
+              }
+            ]
+          }
+        },
+        [
+          _c("option", { attrs: { disabled: "", value: "" } }, [
+            _vm._v("Please select room")
+          ]),
+          _vm._v(" "),
+          _vm._l(_vm.rooms, function(room) {
+            return _c("option", { domProps: { value: room } }, [
+              _vm._v(_vm._s(room.name))
+            ])
+          })
+        ],
+        2
+      ),
+      _c("br"),
+      _vm._v(" "),
+      _c("div", { staticClass: "card-header" }, [
+        _vm._v(
+          "Room name: " +
+            _vm._s(_vm.selectedRoom.name) +
+            " (" +
+            _vm._s(_vm.selectedRoom.id) +
+            ")"
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "card-body" }, [
+        _c("table", { staticClass: "table table-bordered table-striped" }, [
+          _vm._m(2),
+          _vm._v(" "),
+          _c(
+            "tbody",
+            _vm._l(_vm.members, function(member) {
+              return _c("tr", [
+                _c("td", [
+                  _c("a", { attrs: { href: member.photo } }, [
+                    _c("img", {
+                      staticStyle: { width: "100%" },
+                      attrs: { src: member.thumbnail, alt: "Photo" }
+                    })
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(member.name))])
+              ])
+            }),
+            0
+          )
+        ])
+      ])
     ])
   ])
 }
@@ -58605,22 +58774,10 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("thead", [
-      _c("tr", [
-        _c("th", { staticStyle: { width: "100px" } }, [_vm._v("Photo")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Name")])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
     return _c("div", { staticClass: "modal-header" }, [
       _c(
         "h5",
-        { staticClass: "modal-title", attrs: { id: "exampleModalLabel" } },
+        { staticClass: "modal-title", attrs: { id: "createModalLabel" } },
         [_vm._v("Create new Chat Room")]
       ),
       _vm._v(" "),
@@ -58636,6 +58793,35 @@ var staticRenderFns = [
         },
         [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
       )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", { staticStyle: { width: "100px" } }, [_vm._v("Photo")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Name")])
+      ])
     ])
   }
 ]
@@ -59097,7 +59283,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 url: '/frontend/chat/rooms/get-friends'
             }).then(function (response) {
                 _this.friends = response.data.friends;
-                console.log(_this.friends);
+                // console.log(this.friends);
             });
         },
 
@@ -59111,7 +59297,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     _this2.checked[i] = false;
                 }
             });
-            console.log(this.checked);
+            //console.log(this.checked);
             this.$emit('friendsList', this.checked);
         }
     },
@@ -59345,54 +59531,71 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
-    props: [],
+    props: ['roomId'],
+
     data: function data() {
         return {
             friends: [],
             checked: [],
-            checkedFull: []
+            checkedAfter: []
         };
     },
     methods: {
-        getFriends: function getFriends() {
+        getMembersFriends: function getMembersFriends(id) {
             var _this = this;
 
+            console.log(id);
             axios({
                 method: 'get',
-                url: '/frontend/chat/rooms/get-friends'
+                url: '/frontend/chat/rooms/get-members-friends',
+                params: { room_id: id }
             }).then(function (response) {
-                _this.friends = response.data.friends;
-                console.log(_this.friends);
+                _this.friends = response.data.friends.friends;
+                _this.checked = response.data.checked;
+                _this.checkedAfter = [];
+                _this.checked.forEach(function (item, i) {
+                    _this.checkedAfter[item] = true;
+                });
+                console.log('checked');
+                console.log(_this.checked);
             });
         },
-
-        changed: function changed(checkedFull) {
-            var _this2 = this;
-
-            checkedFull.forEach(function (item, i) {
-                if (item === true) {
-                    _this2.checked[i] = item;
-                } else {
-                    _this2.checked[i] = false;
+        changed: function changed(value, id) {
+            if (this.checked.includes(id)) {
+                if (value == false) {
+                    var index = this.checked.indexOf(id);
+                    if (index > -1) {
+                        this.checked.splice(index, 1);
+                    }
                 }
-            });
-            console.log(this.checked);
-            this.$emit('friendsList', this.checked);
+            } else {
+                if (value == true) {
+                    this.checked.push(id);
+                }
+            }
+            //this.checkedAfter = this.checked;
+            console.log("Checked" + this.checked);
+            this.$emit('membersChanged', this.checked);
         }
-    },
-    mounted: function mounted() {
-        this.getFriends();
-    },
-    created: function created() {
-        var _this3 = this;
 
-        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('resetCheckedFriends', function () {
-            _this3.checkedFull = [];
-            _this3.checked = [];
+    },
+    mounted: function mounted() {},
+    created: function created() {
+        var _this2 = this;
+
+        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('roomChanged', function (id) {
+            _this2.getMembersFriends(id);
+
+            // console.log('checked');
+            // console.log(this.checked);
+            // console.log('checkedAfter');
+            // console.log(this.checkedAfter);
         });
     }
 });
@@ -59436,20 +59639,20 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.checkedFull[friend.id],
-                            expression: "checkedFull[friend.id]"
+                            value: _vm.checkedAfter[friend.id],
+                            expression: "checkedAfter[friend.id]"
                           }
                         ],
                         attrs: { type: "checkbox" },
                         domProps: {
-                          checked: Array.isArray(_vm.checkedFull[friend.id])
-                            ? _vm._i(_vm.checkedFull[friend.id], null) > -1
-                            : _vm.checkedFull[friend.id]
+                          checked: Array.isArray(_vm.checkedAfter[friend.id])
+                            ? _vm._i(_vm.checkedAfter[friend.id], null) > -1
+                            : _vm.checkedAfter[friend.id]
                         },
                         on: {
                           change: [
                             function($event) {
-                              var $$a = _vm.checkedFull[friend.id],
+                              var $$a = _vm.checkedAfter[friend.id],
                                 $$el = $event.target,
                                 $$c = $$el.checked ? true : false
                               if (Array.isArray($$a)) {
@@ -59458,14 +59661,14 @@ var render = function() {
                                 if ($$el.checked) {
                                   $$i < 0 &&
                                     _vm.$set(
-                                      _vm.checkedFull,
+                                      _vm.checkedAfter,
                                       friend.id,
                                       $$a.concat([$$v])
                                     )
                                 } else {
                                   $$i > -1 &&
                                     _vm.$set(
-                                      _vm.checkedFull,
+                                      _vm.checkedAfter,
                                       friend.id,
                                       $$a
                                         .slice(0, $$i)
@@ -59473,11 +59676,14 @@ var render = function() {
                                     )
                                 }
                               } else {
-                                _vm.$set(_vm.checkedFull, friend.id, $$c)
+                                _vm.$set(_vm.checkedAfter, friend.id, $$c)
                               }
                             },
                             function($event) {
-                              _vm.changed(_vm.checkedFull)
+                              _vm.changed(
+                                _vm.checkedAfter[friend.id],
+                                friend.id
+                              )
                             }
                           ]
                         }

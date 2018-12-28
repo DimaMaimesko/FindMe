@@ -47,3 +47,13 @@
         </ul>
     </div>
 @endif
+
+@section('scripts')
+    <script>
+
+        $("[data-confirm]").click(function() {
+            return confirm($(this).attr('data-confirm'));
+        });
+
+    </script>
+@endsection

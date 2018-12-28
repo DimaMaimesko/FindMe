@@ -45,6 +45,17 @@ class RoomsController extends Controller
        }
    }
 
+   public function getMembersFriends(Request $request)
+   {
+      $idsOfMembers = [];
+      $members = $this->getMembers($request);
+      foreach ($members['members'] as $member){
+          $idsOfMembers[] = $member['id'];
+      }
+      //dump($idsOfMembers);
+      return ['checked' => $idsOfMembers, 'friends' => $this->getFriends()];
+   }
+
 
 
    public function createRoom(Request $request)
@@ -60,6 +71,27 @@ class RoomsController extends Controller
        $room->creator()->associate(Auth::user());
        $room->save();
        $room->members()->attach($friends);
+       return $this->getRooms();
+
+   }
+
+   public function updateRoom(Request $request)
+   {
+       $checked =  $request->get('checked');
+       $roomId = $request->get('room_id');
+       $room = Room::find($roomId);
+       $room->members()->sync($checked);
+       return ['updatedMembersIds' =>$room->members];
+
+   }
+
+   public function deleteRoom(Request $request)
+   {
+       $checked =  $request->get('checked');
+       $roomId = $request->get('room_id');
+       $room = Room::find($roomId);
+       if (!empty($checked))$room->members()->detach($checked);
+       $room->delete();
        return $this->getRooms();
 
    }

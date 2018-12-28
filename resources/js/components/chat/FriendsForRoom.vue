@@ -59,7 +59,7 @@
                     url:    '/frontend/chat/rooms/get-friends',
                 }).then((response) => {
                     this.friends = response.data.friends;
-                    console.log(this.friends);
+                   // console.log(this.friends);
                 });
             },
 
@@ -72,7 +72,7 @@
                         this.checked[i] = false;
                     }
                 });
-               console.log(this.checked);
+               //console.log(this.checked);
                this.$emit('friendsList', this.checked);
             }
         },
