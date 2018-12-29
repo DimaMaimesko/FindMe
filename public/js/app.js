@@ -484,33 +484,6 @@ module.exports = function normalizeComponent (
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -564,6 +537,33 @@ var app = new Vue({
 // $("[data-confirm]").click(function() {
 //     return confirm($(this).attr('data-confirm'));
 // });
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
 
 /***/ }),
 /* 4 */
@@ -3248,7 +3248,7 @@ Popper.Defaults = Defaults;
 /* harmony default export */ __webpack_exports__["default"] = (Popper);
 //# sourceMappingURL=popper.js.map
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
 /* 6 */
@@ -14130,7 +14130,7 @@ module.exports = Component.exports
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(3);
+__webpack_require__(2);
 module.exports = __webpack_require__(64);
 
 
@@ -31317,7 +31317,7 @@ window.Echo = new __WEBPACK_IMPORTED_MODULE_0_laravel_echo__["a" /* default */](
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(17)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(17)(module)))
 
 /***/ }),
 /* 17 */
@@ -57377,7 +57377,7 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(42).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(42).setImmediate))
 
 /***/ }),
 /* 42 */
@@ -57447,7 +57447,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
                          (typeof global !== "undefined" && global.clearImmediate) ||
                          (this && this.clearImmediate);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
 /* 43 */
@@ -57640,7 +57640,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(8)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(8)))
 
 /***/ }),
 /* 44 */
@@ -58279,7 +58279,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     components: { RoomsComponent: __WEBPACK_IMPORTED_MODULE_0__RoomsComponent___default.a },
-    props: ['user', 'room'],
+    props: ['user'],
     mounted: function mounted() {
         console.log('Component mounted.');
     }
@@ -58291,7 +58291,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(2);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 //
 //
 //
@@ -58395,10 +58397,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             friends: [],
             checked: [],
             checkedForUpdating: [],
-            flag: false
+            flag: false,
+            authId: ''
         };
     },
-    computed: {},
+    computed: {
+        // channel() {
+        //     return  window.Echo.join('update-rooms');
+        // }
+
+    },
     watch: {
         flag: function flag() {
             __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('getMembersFriends');
@@ -58406,6 +58414,49 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     mounted: function mounted() {
+        var _this = this;
+
+        window.Echo.channel('update-rooms').listen('UpdateRooms', function (_ref) {
+            var members = _ref.members;
+
+            console.log(members);
+            if ((typeof members === 'undefined' ? 'undefined' : _typeof(members)) == "object") {
+                if (members.includes(_this.authId)) {
+                    //this.roomChanged(this.selectedRoom.id);
+                    _this.getRooms();
+                    console.log('Updated');
+                }
+            } else {
+                console.log('Removed');
+                _this.members = [];
+                var index = _this.rooms.indexOf(members);
+                if (index > -1) {
+                    _this.rooms.splice(index, 1);
+                }
+            }
+        });
+        window.Echo.channel('edit-room').listen('EditRoom', function (_ref2) {
+            var members = _ref2.members,
+                room_id = _ref2.room_id;
+
+            if (room_id == _this.selectedRoom.id) {
+                _this.roomChanged(room_id);
+            }
+        });
+        window.Echo.channel('delete-room').listen('DeleteRoom', function (_ref3) {
+            var room_id = _ref3.room_id;
+
+            if (room_id == _this.selectedRoom.id) {
+                console.log('Removed');
+                _this.members = [];
+                _this.rooms.forEach(function (item, i, arr) {
+                    if (item.id == room_id) {
+                        arr.splice(i, 1);
+                    }
+                });
+            }
+        });
+
         this.getRooms();
     },
 
@@ -58413,60 +58464,67 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
 
         getRooms: function getRooms() {
-            var _this = this;
+            var _this2 = this;
 
             axios({
                 method: 'get',
                 url: '/frontend/chat/rooms/get-rooms'
             }).then(function (response) {
-                _this.rooms = response.data.rooms;
+                _this2.rooms = response.data.rooms;
+                _this2.authId = response.data.authId;
             });
         },
         roomChanged: function roomChanged(id) {
-            var _this2 = this;
+            var _this3 = this;
 
             axios({
                 method: 'get',
                 url: '/frontend/chat/rooms/get-members',
-                params: { room_id: this.selectedRoom.id }
+                params: { room_id: id }
             }).then(function (response) {
-                _this2.members = response.data.members;
+                _this3.members = response.data.members;
+                _this3.authId = response.data.authId;
                 __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('roomChanged', id);
             });
         },
 
         createRoom: function createRoom() {
-            var _this3 = this;
+            var _this4 = this;
 
             axios({
                 method: 'post',
                 url: '/frontend/chat/rooms/create-room',
                 params: { checked: this.checked, roomName: this.roomName }
             }).then(function (response) {
-                _this3.rooms = response.data.rooms;
+                _this4.rooms = response.data.rooms;
             });
             __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('resetCheckedFriends');
             this.roomName = '';
         },
 
         updateRoom: function updateRoom(checked) {
+            var _this5 = this;
+
             axios({
                 method: 'put',
                 url: '/frontend/chat/rooms/update-room',
                 params: { checked: checked, room_id: this.selectedRoom.id }
             }).then(function (response) {
+                _this5.members = response.data.updatedMembersIds;
                 console.log(response.data.updatedMembersIds);
             });
         },
         deleteRoom: function deleteRoom(checked) {
-            var _this4 = this;
+            var _this6 = this;
 
             axios({
                 method: 'delete',
                 url: '/frontend/chat/rooms/delete-room',
-                params: { checked: checked, room_id: this.selectedRoom.id }
+                params: { checked: this.checked, room_id: this.selectedRoom.id }
             }).then(function (response) {
-                _this4.rooms = response.data.rooms;
+                _this6.rooms = response.data.rooms;
+                _this6.selectedRoom = {};
+                _this6.members = [];
             });
         }
 
@@ -58660,7 +58718,11 @@ var render = function() {
                     {
                       staticClass: "btn btn-danger",
                       attrs: { type: "button", "data-dismiss": "modal" },
-                      on: { click: _vm.deleteRoom }
+                      on: {
+                        click: function($event) {
+                          _vm.deleteRoom(_vm.checkedForUpdating)
+                        }
+                      }
                     },
                     [_vm._v("Delete")]
                   ),
@@ -58749,18 +58811,20 @@ var render = function() {
           _c(
             "tbody",
             _vm._l(_vm.members, function(member) {
-              return _c("tr", [
-                _c("td", [
-                  _c("a", { attrs: { href: member.photo } }, [
-                    _c("img", {
-                      staticStyle: { width: "100%" },
-                      attrs: { src: member.thumbnail, alt: "Photo" }
-                    })
+              return member.id != _vm.authId
+                ? _c("tr", [
+                    _c("td", [
+                      _c("a", { attrs: { href: member.photo } }, [
+                        _c("img", {
+                          staticStyle: { width: "100%" },
+                          attrs: { src: member.thumbnail, alt: "Photo" }
+                        })
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(member.name))])
                   ])
-                ]),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(member.name))])
-              ])
+                : _vm._e()
             }),
             0
           )
@@ -58850,9 +58914,7 @@ var render = function() {
         [
           _c("h3", [_vm._v("Chat")]),
           _vm._v(" "),
-          _c("private-echo-chat-component", {
-            attrs: { user: _vm.user, room: _vm.room }
-          })
+          _c("private-echo-chat-component", { attrs: { user: _vm.user } })
         ],
         1
       ),
@@ -58946,6 +59008,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(2);
 //
 //
 //
@@ -58979,12 +59042,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
     props: {
-        room: {},
+        // room: {},
         user: {}
     },
 
@@ -58994,7 +59059,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             message: '',
             isActive: false,
             typingTimer: false,
-            activeUsers: []
+            activeUsers: [],
+            room: 1
         };
     },
     computed: {
@@ -59003,39 +59069,46 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
 
-    mounted: function mounted() {
+    created: function created() {
         var _this = this;
+
+        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('roomChanged', function (id) {
+            _this.room = id;
+        });
+    },
+    mounted: function mounted() {
+        var _this2 = this;
 
         this.channel.listen('PrivateMessage', function (_ref) {
             var message = _ref.message;
 
-            _this.allMessages.push(message);
-            _this.isActive = false;
+            _this2.allMessages.push(message);
+            _this2.isActive = false;
         });
 
         this.channel.listenForWhisper('typing', function (e) {
 
-            _this.isActive = e.name;
+            _this2.isActive = e.name;
 
-            if (_this.typingTimer) {
-                clearTimeout(_this.typingTimer);
+            if (_this2.typingTimer) {
+                clearTimeout(_this2.typingTimer);
             }
 
-            _this.typingTimer = setTimeout(function () {
-                _this.isActive = false;
+            _this2.typingTimer = setTimeout(function () {
+                _this2.isActive = false;
             }, 2000);
         });
 
         this.channel.here(function (users) {
-            _this.activeUsers = users;
+            _this2.activeUsers = users;
         });
 
         this.channel.joining(function (user) {
-            _this.activeUsers.push(user);
+            _this2.activeUsers.push(user);
         });
 
         this.channel.leaving(function (user) {
-            _this.activeUsers.splice(_this.activeUsers.indexOf(user), 1);
+            _this2.activeUsers.splice(_this2.activeUsers.indexOf(user), 1);
         });
     },
 
@@ -59067,94 +59140,85 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
-    _c(
-      "div",
-      { staticClass: "row justify-content-center" },
-      [
-        _c("h3", [_vm._v("Private room # " + _vm._s(_vm.room))]),
-        _vm._v(" "),
-        _c("h5", [_vm._v("for next users:")]),
-        _vm._v(" "),
-        _vm._l(_vm.room.users, function(user) {
-          return _c("ul", [_vm._v(_vm._s(user.name))])
+    _c("div", { staticClass: "row justify-content-center" }, [
+      _c("h3", [_vm._v("Wellcome, " + _vm._s(_vm.user.name))]),
+      _vm._v(" "),
+      _c("h3", [_vm._v("Private room # " + _vm._s(_vm.room))]),
+      _vm._v(" "),
+      _c("hr"),
+      _vm._v(" "),
+      _c("h5", [_vm._v("Active users in room:")]),
+      _vm._v(" "),
+      _c(
+        "ul",
+        _vm._l(_vm.activeUsers, function(user) {
+          return _c("li", [_vm._v(_vm._s(user))])
         }),
-        _vm._v(" "),
-        _c("hr"),
-        _vm._v(" "),
-        _c("h5", [_vm._v("Active users in room:")]),
-        _vm._v(" "),
-        _c(
-          "ul",
-          _vm._l(_vm.activeUsers, function(user) {
-            return _c("li", [_vm._v(_vm._s(user))])
-          }),
-          0
-        ),
-        _vm._v(" "),
-        _c("div", { staticClass: "card card-default" }, [
-          _c("div", { staticClass: "card-header" }, [
-            _c(
-              "textarea",
-              {
-                staticClass: "form-control",
-                attrs: { rows: "10", readonly: "true" }
-              },
-              [
-                _vm._v(
-                  "                        " +
-                    _vm._s(_vm.allMessages.join("\n")) +
-                    "\n                    "
-                )
-              ]
-            )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "card-body" }, [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.message,
-                  expression: "message"
-                }
-              ],
+        0
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "card card-default" }, [
+        _c("div", { staticClass: "card-header" }, [
+          _c(
+            "textarea",
+            {
               staticClass: "form-control",
-              attrs: {
-                type: "text",
-                placeholder: "Enter your message here and press Enter"
-              },
-              domProps: { value: _vm.message },
-              on: {
-                keyup: function($event) {
-                  if (
-                    !("button" in $event) &&
-                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                  ) {
-                    return null
-                  }
-                  return _vm.sendMessage($event)
-                },
-                keydown: _vm.userTyping,
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.message = $event.target.value
-                }
+              attrs: { rows: "10", readonly: "true" }
+            },
+            [
+              _vm._v(
+                "                        " +
+                  _vm._s(_vm.allMessages.join("\n")) +
+                  "\n                    "
+              )
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "card-body" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.message,
+                expression: "message"
               }
-            })
-          ]),
-          _vm._v(" "),
-          _vm.isActive
-            ? _c("div", { staticClass: "alert alert-info" }, [
-                _vm._v(_vm._s(_vm.isActive) + " is typing...")
-              ])
-            : _vm._e()
-        ])
-      ],
-      2
-    )
+            ],
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              placeholder: "Enter your message here and press Enter"
+            },
+            domProps: { value: _vm.message },
+            on: {
+              keyup: function($event) {
+                if (
+                  !("button" in $event) &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.sendMessage($event)
+              },
+              keydown: _vm.userTyping,
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.message = $event.target.value
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _vm.isActive
+          ? _c("div", { staticClass: "alert alert-info" }, [
+              _vm._v(_vm._s(_vm.isActive) + " is typing...")
+            ])
+          : _vm._e()
+      ])
+    ])
   ])
 }
 var staticRenderFns = []
@@ -59220,7 +59284,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(2);
 //
 //
 //
@@ -59489,7 +59553,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(2);
 //
 //
 //

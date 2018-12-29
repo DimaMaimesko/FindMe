@@ -34,9 +34,14 @@ class User extends Authenticatable
 //        Redis::command('sadd', ['followers'])
     }
 
+//    public function rooms()
+//    {
+//        return $this->hasMany('App\Models\Room', 'creator_id', 'id');
+//    }
+
     public function rooms()
     {
-        return $this->hasMany('App\Models\Room', 'creator_id', 'id');
+        return $this->belongsToMany('App\Models\Room', 'rooms_users');
     }
 
 

@@ -43,7 +43,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button @click="deleteRoom" type="button" class="btn btn-danger" data-dismiss="modal">Delete</button>
+                            <button @click="deleteRoom(checkedForUpdating)" type="button" class="btn btn-danger" data-dismiss="modal">Delete</button>
                             <button @click="updateRoom(checkedForUpdating)" type="button" class="btn btn-primary" data-dismiss="modal">Update</button>
                         </div>
                     </div>
@@ -65,7 +65,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="member in members">
+                    <tr v-for="member in members" v-if="member.id != authId">
                         <td>
                             <a :href="member.photo">
                                 <img :src="member.thumbnail" alt="Photo" style="width:100%">
@@ -104,9 +104,13 @@
                checked: [],
                checkedForUpdating: [],
                flag: false,
+               authId: ''
            }
        },
         computed: {
+            // channel() {
+            //     return  window.Echo.join('update-rooms');
+            // }
 
         },
         watch: {
@@ -117,7 +121,43 @@
         },
 
         mounted() {
+            window.Echo.channel('update-rooms').listen('UpdateRooms', ({members}) => {
+                console.log(members);
+                if ((typeof members) == "object"){
+                    if (members.includes(this.authId)){
+                        //this.roomChanged(this.selectedRoom.id);
+                        this.getRooms();
+                        console.log('Updated');
+                    }
+                }else{
+                    console.log('Removed');
+                    this.members = [];
+                    let index = this.rooms.indexOf(members);
+                    if (index > -1) {
+                        this.rooms.splice(index, 1);
+                    }
+                }
+
+            });
+            window.Echo.channel('edit-room').listen('EditRoom', ({members,room_id}) => {
+                        if(room_id == this.selectedRoom.id){
+                            this.roomChanged(room_id);
+                        }
+            });
+            window.Echo.channel('delete-room').listen('DeleteRoom', ({room_id}) => {
+                        if(room_id == this.selectedRoom.id){
+                            console.log('Removed');
+                            this.members = [];
+                            this.rooms.forEach(function(item, i, arr) {
+                                if (item.id == room_id){
+                                    arr.splice(i, 1);
+                                }
+                            });
+                        }
+            });
+
            this.getRooms();
+
         },
 
         methods:  {
@@ -128,6 +168,7 @@
                     url:    '/frontend/chat/rooms/get-rooms',
                 }).then((response) => {
                     this.rooms = response.data.rooms;
+                    this.authId = response.data.authId;
                 });
 
             },
@@ -135,9 +176,10 @@
                 axios({
                     method: 'get',
                     url:    '/frontend/chat/rooms/get-members',
-                    params: {room_id: this.selectedRoom.id}
+                    params: {room_id: id}
                 }).then((response) => {
                     this.members = response.data.members;
+                    this.authId = response.data.authId;
                     eventBus.$emit('roomChanged', id);
                 });
 
@@ -162,16 +204,19 @@
                     url:    '/frontend/chat/rooms/update-room',
                     params: {checked: checked, room_id: this.selectedRoom.id}
                 }).then((response) => {
-                   console.log(response.data.updatedMembersIds);
+                    this.members =response.data.updatedMembersIds;
+                    console.log(response.data.updatedMembersIds);
                 });
             },
             deleteRoom: function (checked) {
                 axios({
                     method: 'delete',
                     url:    '/frontend/chat/rooms/delete-room',
-                    params: {checked: checked, room_id: this.selectedRoom.id}
+                    params: {checked: this.checked, room_id: this.selectedRoom.id}
                 }).then((response) => {
                     this.rooms = response.data.rooms;
+                    this.selectedRoom = {};
+                    this.members = [];
                 });
             },
 

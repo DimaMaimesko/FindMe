@@ -2,9 +2,9 @@
 
 @section('content')
 
-    <h1>Chat</h1>
+    <h1 class="text-center">Chat</h1>
 
-    <chat-component :room="{{$room}}" :user="{{$user}}"></chat-component>
+    <chat-component  :user="{{$user}}"></chat-component>
 
 
 @endsection

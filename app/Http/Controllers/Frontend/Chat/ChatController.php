@@ -15,8 +15,8 @@ class ChatController extends Controller
    public function index()
    {
      return view('frontend/chat/index', [
-         'room' => 25,
-         'user' => 50,
+         //'room' => 25,
+         'user' => Auth::user(),
      ]);
    }
 

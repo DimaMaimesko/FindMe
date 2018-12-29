@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Frontend\Chat;
 
+use App\Events\DeleteRoom;
+use App\Events\EditRoom;
+use App\Events\UpdateRooms;
 use Illuminate\Http\Request;
 use App\Services\RelationsService;
 use App\Http\Controllers\Controller;
@@ -22,7 +25,7 @@ class RoomsController extends Controller
    public function getRooms()
    {
       $rooms = Auth::user()->rooms->toArray();
-      return ['rooms' => $rooms];
+      return ['rooms' => $rooms, 'authId' => Auth::id()];
    }
 
 
@@ -31,7 +34,12 @@ class RoomsController extends Controller
       $room_id = $request->get('room_id');
       $room = Room::find($room_id);
       $members = $room->members->toArray();
-      return ['members' => $members];
+//      dump($members);
+//       if (($key = array_search(Auth::id(), $members)) !== false) {
+//           unset($members[$key]);
+//       }
+//       dump($members);
+      return ['members' => $members, 'authId' => Auth::id()];
    }
 
    public function getFriends()
@@ -71,6 +79,9 @@ class RoomsController extends Controller
        $room->creator()->associate(Auth::user());
        $room->save();
        $room->members()->attach($friends);
+       $room->members()->attach(Auth::id());
+       $this->broadcastUpdateRooms($room, $room->id);
+
        return $this->getRooms();
 
    }
@@ -81,17 +92,26 @@ class RoomsController extends Controller
        $roomId = $request->get('room_id');
        $room = Room::find($roomId);
        $room->members()->sync($checked);
+       //$this->broadcastUpdateRooms($room, $roomId);
+       $members = $room->members;
+       foreach ($members as $member){
+           $membersIds[] = $member->id;
+       }
+       dump($roomId);
+       dump($membersIds);
+       EditRoom::dispatch($membersIds, $roomId);
        return ['updatedMembersIds' =>$room->members];
-
    }
 
    public function deleteRoom(Request $request)
    {
-       $checked =  $request->get('checked');
+       //$checked =  $request->get('checked');
        $roomId = $request->get('room_id');
        $room = Room::find($roomId);
-       if (!empty($checked))$room->members()->detach($checked);
+       $room->members()->detach();
+       $room->members()->detach(Auth::id());
        $room->delete();
+       DeleteRoom::dispatch($roomId);
        return $this->getRooms();
 
    }
@@ -102,6 +122,22 @@ class RoomsController extends Controller
          'room' => 25,
          'user' => 50,
      ]);
+   }
+
+   private function broadcastUpdateRooms($room, $room_id)
+   {
+       if ($room !== 'deleted'){
+           $membersIds = [];
+           $members = $room->members;
+           foreach ($members as $member){
+               $membersIds[] = $member->id;
+           }
+           UpdateRooms::dispatch($membersIds);
+       }else{
+           UpdateRooms::dispatch($room_id);
+       }
+
+
    }
 
 

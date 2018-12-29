@@ -2,9 +2,10 @@
     <div class="container">
         <div class="row justify-content-center">
 
+                <h3>Wellcome, {{user.name}}</h3>
                 <h3>Private room # {{room}}</h3>
-                <h5>for next users:</h5>
-                <ul v-for="user in room.users">{{user.name}}</ul>
+                <!--<h5>for next users:</h5>-->
+                <!--<ul v-for="user in room.users">{{user.name}}</ul>-->
                 <hr>
                 <h5>Active users in room:</h5>
                 <ul>
@@ -34,11 +35,11 @@
 <script>
 
 
-
+    import { eventBus } from "../../app";
     export default {
 
         props: {
-          room: {},
+          // room: {},
           user: {},
         },
 
@@ -49,13 +50,20 @@
                isActive: false,
                typingTimer: false,
                activeUsers: [],
+               room: 1,
            }
        },
         computed: {
             channel() {
-                return  window.Echo.join('room.' + this.room)
+                  return  window.Echo.join('room.' + this.room)
             }
         },
+
+        created() {
+            eventBus.$on('roomChanged',  (id)=> {
+               this.room = id;
+            });
+         },
 
         mounted() {
            this.channel.listen('PrivateMessage', ({message}) => {
