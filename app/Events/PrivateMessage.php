@@ -21,7 +21,7 @@ class PrivateMessage implements ShouldBroadcast
     {
         $this->message = $message;
         $this->room_id = $room_id;
-        $this->dontBroadcastToCurrentUser();
+        //$this->dontBroadcastToCurrentUser();
     }
 
 

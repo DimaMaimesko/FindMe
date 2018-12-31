@@ -24,7 +24,7 @@ class RoomsController extends Controller
 
    public function getRooms()
    {
-      $rooms = Auth::user()->rooms->toArray();
+      $rooms = Auth::user()->rooms()->with('creator')->get()->toArray();
       return ['rooms' => $rooms, 'authId' => Auth::id()];
    }
 
@@ -97,15 +97,12 @@ class RoomsController extends Controller
        foreach ($members as $member){
            $membersIds[] = $member->id;
        }
-       dump($roomId);
-       dump($membersIds);
        EditRoom::dispatch($membersIds, $roomId);
        return ['updatedMembersIds' =>$room->members];
    }
 
    public function deleteRoom(Request $request)
    {
-       //$checked =  $request->get('checked');
        $roomId = $request->get('room_id');
        $room = Room::find($roomId);
        $room->members()->detach();
@@ -113,8 +110,21 @@ class RoomsController extends Controller
        $room->delete();
        DeleteRoom::dispatch($roomId);
        return $this->getRooms();
-
    }
+
+    public function quitRoom(Request $request)
+    {
+        $room_id = $request->get('room_id');
+        $room = Room::find($room_id);
+        $room->members()->detach(Auth::id());
+        $rooms = Auth::user()->rooms()->with('creator')->get()->toArray();
+        $members = $room->members;
+        foreach ($members as $member){
+            $membersIds[] = $member->id;
+        }
+        EditRoom::dispatch($membersIds, $room_id);
+        return ['rooms' => $rooms];
+    }
 
    public function create()
    {

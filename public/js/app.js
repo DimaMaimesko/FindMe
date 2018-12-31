@@ -58379,9 +58379,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 //
 //
 //
-//
-//
-//
 
 
 
@@ -58416,6 +58413,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     mounted: function mounted() {
         var _this = this;
 
+        this.getRooms();
+
         window.Echo.channel('update-rooms').listen('UpdateRooms', function (_ref) {
             var members = _ref.members;
 
@@ -58439,6 +58438,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var members = _ref2.members,
                 room_id = _ref2.room_id;
 
+            // if (((selectedRoom.hasOwnProperty('creator'))&&(authId != selectedRoom.creator.id))&&(!members.includes(authId))){
+            //     this.selectedRoom = {};
+            //     this.members = [];
+            // }
+            _this.getRooms();
             if (room_id == _this.selectedRoom.id) {
                 _this.roomChanged(room_id);
             }
@@ -58456,8 +58460,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 });
             }
         });
-
-        this.getRooms();
     },
 
 
@@ -58525,6 +58527,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 _this6.rooms = response.data.rooms;
                 _this6.selectedRoom = {};
                 _this6.members = [];
+            });
+        },
+        quitRoom: function quitRoom(room) {
+            var _this7 = this;
+
+            axios({
+                method: 'get',
+                url: '/frontend/chat/rooms/quit-room',
+                params: { room_id: room.id }
+            }).then(function (response) {
+                _this7.rooms = response.data.rooms;
+                _this7.selectedRoom = {};
+                _this7.members = [];
             });
         }
 
@@ -58690,6 +58705,15 @@ var render = function() {
                   "div",
                   { staticClass: "modal-body" },
                   [
+                    _vm.selectedRoom.hasOwnProperty("creator")
+                      ? _c("h4", [
+                          _vm._v(
+                            "Room's creator: " +
+                              _vm._s(_vm.selectedRoom.creator.name)
+                          )
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
                     _vm.selectedRoom.hasOwnProperty("id")
                       ? _c("members-in-room", {
                           on: {
@@ -58713,33 +58737,51 @@ var render = function() {
                     [_vm._v("Cancel")]
                   ),
                   _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-danger",
-                      attrs: { type: "button", "data-dismiss": "modal" },
-                      on: {
-                        click: function($event) {
-                          _vm.deleteRoom(_vm.checkedForUpdating)
-                        }
-                      }
-                    },
-                    [_vm._v("Delete")]
-                  ),
+                  _vm.selectedRoom.hasOwnProperty("creator") &&
+                  _vm.authId == _vm.selectedRoom.creator.id
+                    ? _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-danger",
+                          attrs: { type: "button", "data-dismiss": "modal" },
+                          on: {
+                            click: function($event) {
+                              _vm.deleteRoom(_vm.checkedForUpdating)
+                            }
+                          }
+                        },
+                        [_vm._v("Delete")]
+                      )
+                    : _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-danger",
+                          attrs: { type: "button", "data-dismiss": "modal" },
+                          on: {
+                            click: function($event) {
+                              _vm.quitRoom(_vm.selectedRoom)
+                            }
+                          }
+                        },
+                        [_vm._v("Quit Room")]
+                      ),
                   _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary",
-                      attrs: { type: "button", "data-dismiss": "modal" },
-                      on: {
-                        click: function($event) {
-                          _vm.updateRoom(_vm.checkedForUpdating)
-                        }
-                      }
-                    },
-                    [_vm._v("Update")]
-                  )
+                  _vm.selectedRoom.hasOwnProperty("creator") &&
+                  _vm.authId == _vm.selectedRoom.creator.id
+                    ? _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-primary",
+                          attrs: { type: "button", "data-dismiss": "modal" },
+                          on: {
+                            click: function($event) {
+                              _vm.updateRoom(_vm.checkedForUpdating)
+                            }
+                          }
+                        },
+                        [_vm._v("Update")]
+                      )
+                    : _vm._e()
                 ])
               ])
             ]
@@ -59043,13 +59085,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
     props: {
-        // room: {},
         user: {}
     },
 
@@ -59060,11 +59105,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             isActive: false,
             typingTimer: false,
             activeUsers: [],
-            room: 1
+            room: '',
+            previousRoom: '',
+            messages: [],
+            newMessages: [],
+            nameClasses: ["badge badge-pill badge-primary  mb-0", "badge badge-pill badge-secondary  mb-0", "badge badge-pill badge-success  mb-0", "badge badge-pill badge-danger  mb-0", "badge badge-pill badge-warning  mb-0", "badge badge-pill badge-info  mb-0", "badge badge-pill badge-light  mb-0", "badge badge-pill badge-dark  mb-0"],
+            textClasses: ["alert alert-primary mt-0", "alert alert-secondary mt-0", "alert alert-success mt-0", "alert alert-danger mt-0", "alert alert-warning mt-0", "alert alert-info mt-0", "alert alert-light mt-0", "alert alert-dark mt-0"],
+            creatorClass: "d-flex flex-column align-items-start",
+            memberClass: "d-flex flex-column align-items-end text-right"
         };
     },
     computed: {
         channel: function channel() {
+
             return window.Echo.join('room.' + this.room);
         }
     },
@@ -59073,44 +59126,43 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         var _this = this;
 
         __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('roomChanged', function (id) {
+            window.Echo.leave('room.' + _this.room);
             _this.room = id;
+            _this.newMessages = [];
+            window.Echo.join('room.' + _this.room).listen('PrivateMessage', function (_ref) {
+                var message = _ref.message;
+
+                _this.newMessages.push(message);
+                _this.isActive = false;
+            });
+            window.Echo.join('room.' + _this.room).listenForWhisper('typing', function (e) {
+
+                _this.isActive = e.name;
+
+                if (_this.typingTimer) {
+                    clearTimeout(_this.typingTimer);
+                }
+
+                _this.typingTimer = setTimeout(function () {
+                    _this.isActive = false;
+                }, 2000);
+            });
+            window.Echo.join('room.' + _this.room).here(function (users) {
+                _this.activeUsers = users;
+            });
+
+            window.Echo.join('room.' + _this.room).joining(function (user) {
+                _this.activeUsers.push(user);
+            });
+
+            window.Echo.join('room.' + _this.room).leaving(function (user) {
+                _this.activeUsers.splice(_this.activeUsers.indexOf(user), 1);
+            });
+
+            _this.getMessages(_this.room);
         });
     },
-    mounted: function mounted() {
-        var _this2 = this;
-
-        this.channel.listen('PrivateMessage', function (_ref) {
-            var message = _ref.message;
-
-            _this2.allMessages.push(message);
-            _this2.isActive = false;
-        });
-
-        this.channel.listenForWhisper('typing', function (e) {
-
-            _this2.isActive = e.name;
-
-            if (_this2.typingTimer) {
-                clearTimeout(_this2.typingTimer);
-            }
-
-            _this2.typingTimer = setTimeout(function () {
-                _this2.isActive = false;
-            }, 2000);
-        });
-
-        this.channel.here(function (users) {
-            _this2.activeUsers = users;
-        });
-
-        this.channel.joining(function (user) {
-            _this2.activeUsers.push(user);
-        });
-
-        this.channel.leaving(function (user) {
-            _this2.activeUsers.splice(_this2.activeUsers.indexOf(user), 1);
-        });
-    },
+    mounted: function mounted() {},
 
 
     methods: {
@@ -59118,15 +59170,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             axios({
                 method: 'post',
                 url: '/frontend/chat/send',
-                params: { message: this.message, room_id: this.room }
+                params: { message: this.message, room_id: this.room, user_id: this.user.id }
             }).then(function (response) {
                 console.log('Data: ' + response.data);
             });
-            this.allMessages.push(this.message);
             this.message = '';
         },
         userTyping: function userTyping() {
-            this.channel.whisper('typing', { name: this.user });
+            window.Echo.join('room.' + this.room).whisper('typing', { name: this.user });
+        },
+
+        getMessages: function getMessages(id) {
+            var _this2 = this;
+
+            axios({
+                method: 'get',
+                url: '/frontend/chat/get-messages',
+                params: { room_id: id }
+            }).then(function (response) {
+                _this2.messages = response.data.messages;
+            });
         }
     }
 });
@@ -59141,84 +59204,162 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row justify-content-center" }, [
-      _c("h3", [_vm._v("Wellcome, " + _vm._s(_vm.user.name))]),
+      _c("h5", [
+        _vm._v("Wellcome, "),
+        _c("span", { class: _vm.nameClasses[0] }, [
+          _vm._v(_vm._s(_vm.user.name))
+        ])
+      ]),
       _vm._v(" "),
-      _c("h3", [_vm._v("Private room # " + _vm._s(_vm.room))]),
-      _vm._v(" "),
-      _c("hr"),
+      _c("h5", [_vm._v("Private room # " + _vm._s(_vm.room))]),
       _vm._v(" "),
       _c("h5", [_vm._v("Active users in room:")]),
       _vm._v(" "),
       _c(
         "ul",
         _vm._l(_vm.activeUsers, function(user) {
-          return _c("li", [_vm._v(_vm._s(user))])
+          return _c("li", [_vm._v(_vm._s(user.name))])
         }),
         0
       ),
       _vm._v(" "),
-      _c("div", { staticClass: "card card-default" }, [
-        _c("div", { staticClass: "card-header" }, [
-          _c(
-            "textarea",
-            {
-              staticClass: "form-control",
-              attrs: { rows: "10", readonly: "true" }
-            },
-            [
-              _vm._v(
-                "                        " +
-                  _vm._s(_vm.allMessages.join("\n")) +
-                  "\n                    "
-              )
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "card-body" }, [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.message,
-                expression: "message"
-              }
-            ],
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              placeholder: "Enter your message here and press Enter"
-            },
-            domProps: { value: _vm.message },
-            on: {
-              keyup: function($event) {
-                if (
-                  !("button" in $event) &&
-                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                ) {
-                  return null
-                }
-                return _vm.sendMessage($event)
-              },
-              keydown: _vm.userTyping,
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.message = $event.target.value
-              }
+      _c("div", { staticClass: "container" }, [
+        _c(
+          "div",
+          {
+            staticStyle: {
+              height: "300px",
+              "overflow-y": "scroll",
+              "overflow-x": "hidden"
             }
-          })
-        ]),
+          },
+          [
+            _vm._l(_vm.messages, function(mess) {
+              return _vm.messages != []
+                ? _c(
+                    "div",
+                    {
+                      class:
+                        _vm.user.id == mess.creator.id
+                          ? _vm.creatorClass
+                          : _vm.memberClass
+                    },
+                    [
+                      _c(
+                        "p",
+                        {
+                          class:
+                            _vm.user.id == mess.creator.id
+                              ? _vm.nameClasses[0]
+                              : _vm.nameClasses[1]
+                        },
+                        [_vm._v(_vm._s(mess.creator.name))]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          class:
+                            _vm.user.id == mess.creator.id
+                              ? _vm.textClasses[0]
+                              : _vm.textClasses[1],
+                          staticStyle: { width: "90%" }
+                        },
+                        [_vm._v(_vm._s(mess.text))]
+                      )
+                    ]
+                  )
+                : _vm._e()
+            }),
+            _vm._v(" "),
+            _vm._l(_vm.newMessages, function(mess) {
+              return _vm.newMessages != []
+                ? _c(
+                    "div",
+                    {
+                      class:
+                        _vm.user.id == mess.creator.id
+                          ? _vm.creatorClass
+                          : _vm.memberClass
+                    },
+                    [
+                      _c(
+                        "p",
+                        {
+                          class:
+                            _vm.user.id == mess.creator.id
+                              ? _vm.nameClasses[0]
+                              : _vm.nameClasses[1]
+                        },
+                        [_vm._v(_vm._s(mess.creator.name))]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          class:
+                            _vm.user.id == mess.creator.id
+                              ? _vm.textClasses[0]
+                              : _vm.textClasses[1],
+                          staticStyle: { width: "90%" }
+                        },
+                        [_vm._v(_vm._s(mess.text))]
+                      )
+                    ]
+                  )
+                : _vm._e()
+            }),
+            _vm._v(" "),
+            _c("h4", { attrs: { id: "fat" } })
+          ],
+          2
+        ),
+        _vm._v(" "),
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.message,
+              expression: "message"
+            }
+          ],
+          staticClass: "form-control",
+          staticStyle: { scrolling: "auto" },
+          attrs: {
+            type: "text",
+            placeholder: "Enter your message here and press Enter"
+          },
+          domProps: { value: _vm.message },
+          on: {
+            keyup: function($event) {
+              if (
+                !("button" in $event) &&
+                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+              ) {
+                return null
+              }
+              return _vm.sendMessage($event)
+            },
+            keydown: _vm.userTyping,
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.message = $event.target.value
+            }
+          }
+        }),
         _vm._v(" "),
         _vm.isActive
           ? _c("div", { staticClass: "alert alert-info" }, [
-              _vm._v(_vm._s(_vm.isActive) + " is typing...")
+              _vm._v(_vm._s(_vm.isActive.name) + " is typing...")
             ])
           : _vm._e()
       ])
-    ])
+    ]),
+    _vm._v(" "),
+    _c("a", { attrs: { href: "#fat" } }, [_vm._v("Scroll")])
   ])
 }
 var staticRenderFns = []

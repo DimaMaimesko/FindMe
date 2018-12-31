@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <button class="btn btn-success" data-toggle="modal" data-target="#createModal">Create New Room</button>
-            <!-- Modal -->
+            <!-- Modal CREATE-->
             <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -26,7 +26,7 @@
                 </div>
             </div>
             <button @click="flag = !flag" v-if="selectedRoom.hasOwnProperty('name')" class="btn btn-info" data-toggle="modal" data-target="#editModal">Edit Room</button>
-            <!-- Modal -->
+            <!-- Modal EDIT -->
             <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -37,14 +37,16 @@
                             </button>
                         </div>
                         <div class="modal-body">
+                            <h4 v-if="(selectedRoom.hasOwnProperty('creator'))">Room's creator: {{selectedRoom.creator.name}}</h4>
 
                             <members-in-room v-if="selectedRoom.hasOwnProperty('id')" @membersChanged="checkedForUpdating = $event"></members-in-room>
 
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button @click="deleteRoom(checkedForUpdating)" type="button" class="btn btn-danger" data-dismiss="modal">Delete</button>
-                            <button @click="updateRoom(checkedForUpdating)" type="button" class="btn btn-primary" data-dismiss="modal">Update</button>
+                            <button v-if="((selectedRoom.hasOwnProperty('creator'))&&(authId == selectedRoom.creator.id))" @click="deleteRoom(checkedForUpdating)" type="button" class="btn btn-danger" data-dismiss="modal">Delete</button>
+                            <button v-else @click="quitRoom(selectedRoom)" type="button" class="btn btn-danger" data-dismiss="modal">Quit Room</button>
+                            <button v-if="((selectedRoom.hasOwnProperty('creator'))&&(authId == selectedRoom.creator.id))" @click="updateRoom(checkedForUpdating)" type="button" class="btn btn-primary" data-dismiss="modal">Update</button>
                         </div>
                     </div>
                 </div>
@@ -73,15 +75,10 @@
                         </td>
                         <td>{{ member.name }}</td>
                     </tr>
-
                     </tbody>
                 </table>
 
             </div>
-
-
-
-
         </div>
     </div>
 </template>
@@ -121,6 +118,8 @@
         },
 
         mounted() {
+            this.getRooms();
+
             window.Echo.channel('update-rooms').listen('UpdateRooms', ({members}) => {
                 console.log(members);
                 if ((typeof members) == "object"){
@@ -140,9 +139,15 @@
 
             });
             window.Echo.channel('edit-room').listen('EditRoom', ({members,room_id}) => {
+                // if (((selectedRoom.hasOwnProperty('creator'))&&(authId != selectedRoom.creator.id))&&(!members.includes(authId))){
+                //     this.selectedRoom = {};
+                //     this.members = [];
+                // }
+                        this.getRooms();
                         if(room_id == this.selectedRoom.id){
                             this.roomChanged(room_id);
                         }
+
             });
             window.Echo.channel('delete-room').listen('DeleteRoom', ({room_id}) => {
                         if(room_id == this.selectedRoom.id){
@@ -155,9 +160,6 @@
                             });
                         }
             });
-
-           this.getRooms();
-
         },
 
         methods:  {
@@ -219,6 +221,17 @@
                     this.members = [];
                 });
             },
+            quitRoom: function (room) {
+                axios({
+                    method: 'get',
+                    url:    '/frontend/chat/rooms/quit-room',
+                    params: {room_id: room.id}
+                }).then((response) => {
+                    this.rooms = response.data.rooms;
+                    this.selectedRoom = {};
+                    this.members = [];
+                });
+            }
 
         }
     }

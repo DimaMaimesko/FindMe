@@ -23,6 +23,13 @@ class Room extends Model
         return $this->belongsTo(User::class, 'creator_id', 'id');
     }
 
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'room_id', 'id');
+    }
+
+
+
 
 
 }
