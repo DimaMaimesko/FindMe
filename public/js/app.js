@@ -58264,17 +58264,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -58540,6 +58529,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 _this7.rooms = response.data.rooms;
                 _this7.selectedRoom = {};
                 _this7.members = [];
+                __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('quitRoom', room.id);
             });
         }
 
@@ -58969,25 +58959,10 @@ var render = function() {
       )
     ]),
     _vm._v(" "),
-    _c("hr"),
-    _vm._v(" "),
-    _vm._m(0)
+    _c("hr")
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row justify-content-center" }, [
-      _c("div", { staticClass: "col-md-6" }, [
-        _c("h3", [_vm._v("Participants")])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-md-6" }, [_c("h3", [_vm._v("Friends")])])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -59129,6 +59104,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             window.Echo.leave('room.' + _this.room);
             _this.room = id;
             _this.newMessages = [];
+            _this.messages = [];
             window.Echo.join('room.' + _this.room).listen('PrivateMessage', function (_ref) {
                 var message = _ref.message;
 
@@ -59160,6 +59136,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
 
             _this.getMessages(_this.room);
+        });
+
+        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('quitRoom', function (id) {
+            window.Echo.leave('room.' + id);
+            _this.newMessages = [];
+            _this.messages = [];
+            _this.activeUsers = [];
         });
     },
     mounted: function mounted() {},

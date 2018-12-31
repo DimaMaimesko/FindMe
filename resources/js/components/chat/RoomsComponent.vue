@@ -230,6 +230,7 @@
                     this.rooms = response.data.rooms;
                     this.selectedRoom = {};
                     this.members = [];
+                    eventBus.$emit('quitRoom', room.id);
                 });
             }
 

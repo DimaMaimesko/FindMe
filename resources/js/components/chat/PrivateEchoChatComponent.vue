@@ -93,6 +93,7 @@
                window.Echo.leave('room.' + this.room);
                this.room = id;
                this.newMessages = [];
+               this.messages = [];
                window.Echo.join('room.' + this.room).listen('PrivateMessage', ({message}) => {
                    this.newMessages.push(message);
                    this.isActive = false;
@@ -123,6 +124,13 @@
                 });
 
                 this.getMessages(this.room);
+            });
+
+            eventBus.$on('quitRoom',  (id)=> {
+                window.Echo.leave('room.' + id);
+                this.newMessages = [];
+                this.messages = [];
+                this.activeUsers = [];
             });
          },
 
