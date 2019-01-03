@@ -15,6 +15,7 @@ class MainPageController extends Controller
 
     public function index()
     {
+
         return view('frontend.page.index');
 
 

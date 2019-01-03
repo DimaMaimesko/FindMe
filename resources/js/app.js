@@ -17,7 +17,7 @@ export const eventBus = new Vue();
  * Vue components. It will recursively scan this directory for the Vue
  * components and automatically register them with their "basename".
  *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
+ * Eg. ./components/MapComponent.vue -> <example-component></example-component>
  */
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
@@ -28,6 +28,9 @@ Vue.component('private-echo-chat-component', require('./components/chat/PrivateE
 Vue.component('rooms-component', require('./components/chat/RoomsComponent.vue'));
 Vue.component('friends-for-room', require('./components/chat/FriendsForRoom.vue'));
 Vue.component('members-in-room', require('./components/chat/MembersInRoom.vue'));
+
+Vue.component('map-component', require('./components/map/MapComponent.vue'));
+Vue.component('watch-friends', require('./components/map/WatchFriends.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key)))
@@ -41,6 +44,7 @@ Vue.component('members-in-room', require('./components/chat/MembersInRoom.vue'))
 const app = new Vue({
     el: '#app'
 });
+window.app = app;
 
 //
 // $("[data-confirm]").click(function() {

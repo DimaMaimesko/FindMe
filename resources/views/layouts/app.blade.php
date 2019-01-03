@@ -2,7 +2,8 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{--<meta name="viewport" content="width=device-width, initial-scale=1">--}}
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -19,6 +20,7 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
+{{--<div style="height: 300px" id="map"></div>--}}
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
             <div class="container">
@@ -94,13 +96,17 @@
             <div class="container">
 
                 @include('layouts.flash')
+
                 @yield('content')
             </div>
 
         </main>
     </div>
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}"></script>
+    <script  src="{{ asset('js/app.js') }}"></script>
     @yield('scripts')
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDL0LWO9p6xdFB8bfBqJIrwV-iC4cpZ2cI&callback=window.app.$refs.foo.initMap">
+</script>
 </body>
 </html>
