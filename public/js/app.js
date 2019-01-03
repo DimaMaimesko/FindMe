@@ -60405,7 +60405,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     _this.infoWindow.open(_this.map);
                     _this.map.setCenter(pos);
                 }, function () {
-                    this.handleLocationError(true, this.infoWindow, this.map.getCenter());
+                    _this.handleLocationError(true, _this.infoWindow, _this.map.getCenter());
                 });
             } else {
                 // Browser doesn't support Geolocation

@@ -43,7 +43,7 @@
                  this.infoWindow.setContent('Location found.');
                  this.infoWindow.open(this.map);
                  this.map.setCenter(pos);
-             }, function() {
+             }, ()=> {
                  this.handleLocationError(true, this.infoWindow, this.map.getCenter());
              });
          } else {
