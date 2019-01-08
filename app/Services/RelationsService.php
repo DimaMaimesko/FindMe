@@ -54,6 +54,28 @@ class RelationsService
         return Redis::smembers('friends:'.$id);
     }
 
+    public function writePositionForAuth($lat, $lng)
+    {
+        $coordinates = json_encode([$lat,$lng]);
+        Redis::hset('coordinates', 'user:'.Auth::id(), $coordinates);
+    }
+
+    public function getPositionForAuth()
+    {
+        return Redis::hget('coordinates', 'user:'.Auth::id());
+    }
+
+    public function writeTimeForAuth()
+    {
+        Redis::hset('time', 'user:'.Auth::id(), time());
+    }
+
+    public function getTimeForAuth()
+    {
+        return Redis::hget('time', 'user:'.Auth::id());
+    }
+
+
    private function isMyFollowee($id)
    {
       return Redis::sismember('followees:'.Auth::id(), $id);
@@ -73,6 +95,8 @@ class RelationsService
        }
 
    }
+
+
 
 
 

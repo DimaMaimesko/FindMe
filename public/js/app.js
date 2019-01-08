@@ -60003,7 +60003,7 @@ exports = module.exports = __webpack_require__(67)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* Always set the map height explicitly to define the size of the div\n * element that contains the map. */\n/*#map {*/\n    /*height: 100%;*/\n/*}*/\n/* Optional: Makes the sample page fill the window. */\n/*html, body {*/\n    /*height: 100%;*/\n    /*margin: 0;*/\n    /*padding: 0;*/\n/*}*/\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* Always set the map height explicitly to define the size of the div\n * element that contains the map. */\n/*#map {*/\n    /*height: 100%;*/\n/*}*/\n/* Optional: Makes the sample page fill the window. */\n/*html, body {*/\n    /*height: 100%;*/\n    /*margin: 0;*/\n    /*padding: 0;*/\n/*}*/\n", ""]);
 
 // exports
 
@@ -60377,11 +60377,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     data: function data() {
         return {
             map: {},
-            infoWindow: {}
+            infoWindow: {},
+            pos: {},
+            marker: {},
+            oldPosition: {
+                lat: 0,
+                lng: 0
+            }
         };
     },
     methods: {
-
         initMap: function initMap() {
             var _this = this;
 
@@ -60392,31 +60397,72 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.infoWindow = new google.maps.InfoWindow();
             // Try HTML5 geolocation.
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
+
+                navigator.geolocation.watchPosition(function (position) {
                     var pos = {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
                     };
-                    console.log(pos.lat);
-                    console.log(pos.lng);
-
+                    _this.sendPosToServer(pos);
                     _this.infoWindow.setPosition(pos);
                     _this.infoWindow.setContent('Location found.');
                     _this.infoWindow.open(_this.map);
                     _this.map.setCenter(pos);
+                    _this.marker = new google.maps.Marker({ position: pos, map: _this.map });
                 }, function () {
                     _this.handleLocationError(true, _this.infoWindow, _this.map.getCenter());
                 });
             } else {
                 // Browser doesn't support Geolocation
                 this.handleLocationError(false, this.infoWindow, this.map.getCenter());
+            };
+            this.addMarker({ lat: -34.497, lng: 150.644 });
+            this.addMarker({ lat: -34.597, lng: 150.644 });
+        },
+
+        addMarker: function addMarker(coords) {
+            var marker = new google.maps.Marker({ position: coords, map: this.map });
+        },
+        sendPosToServer: function sendPosToServer(pos) {
+            var newLat = pos.lat.toFixed(6);
+            var newLng = pos.lng.toFixed(6);
+            if (newLat != this.oldPosition.lat && newLng != this.oldPosition.lng) {
+                this.sendNewCoordinates(newLat, newLng);
             }
+            this.oldPosition.lat = newLat;
+            this.oldPosition.lng = newLng;
+        },
+        sendNewCoordinates: function sendNewCoordinates(newLat, newLng) {
+            var _this2 = this;
+
+            axios({
+                method: 'post',
+                url: '/frontend/map/write-new-pos',
+                params: { lat: newLat, lng: newLng }
+            }).then(function (response) {
+                console.log(response.data.newPosition);
+                console.log(_this2.timeConverter(response.data.newTime));
+            });
+            // eventBus.$emit('resetCheckedFriends');
+            // this.roomName = '';
         },
 
         handleLocationError: function handleLocationError(browserHasGeolocation, infoWindow, pos) {
             infoWindow.setPosition(pos);
             infoWindow.setContent(browserHasGeolocation ? 'Error: The Geolocation service failed.' : 'Error: Your browser doesn\'t support geolocation.');
             infoWindow.open(this.map);
+        },
+        timeConverter: function timeConverter(UNIX_timestamp) {
+            var a = new Date(UNIX_timestamp * 1000);
+            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            var year = a.getFullYear();
+            var month = months[a.getMonth()];
+            var date = a.getDate();
+            var hour = a.getHours();
+            var min = a.getMinutes();
+            var sec = a.getSeconds();
+            var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
+            return time;
         }
 
     }
@@ -60554,61 +60600,88 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
-    props: ['roomId'],
+    props: [],
 
     data: function data() {
         return {
-            friends: [],
-            checked: [],
-            checkedAfter: []
+            friends: []
+            // checked: [],
+            // checkedAfter: [],
         };
     },
     methods: {
-        getMembersFriends: function getMembersFriends(id) {
+        getAllFriends: function getAllFriends() {
             var _this = this;
 
-            console.log(id);
+            // console.log(id);
             axios({
                 method: 'get',
-                url: '/frontend/chat/rooms/get-members-friends',
-                params: { room_id: id }
+                url: '/frontend/map/get-all-friends'
+                //params: {room_id: id}
             }).then(function (response) {
-                _this.friends = response.data.friends.friends;
-                _this.checked = response.data.checked;
-                _this.checkedAfter = [];
-                _this.checked.forEach(function (item, i) {
-                    _this.checkedAfter[item] = true;
-                });
-                console.log('checked');
-                console.log(_this.checked);
+                _this.friends = response.data.friends;
+                // this.checked = response.data.checked;
+                // this.checkedAfter = [];
+                // this.checked.forEach((item, i) => {
+                //     this.checkedAfter[item] = true;
+                // });
+                // console.log('checked');
+                // console.log(this.checked);
             });
-        },
-        changed: function changed(value, id) {
-            if (this.checked.includes(id)) {
-                if (value == false) {
-                    var index = this.checked.indexOf(id);
-                    if (index > -1) {
-                        this.checked.splice(index, 1);
-                    }
-                }
-            } else {
-                if (value == true) {
-                    this.checked.push(id);
-                }
-            }
-            //this.checkedAfter = this.checked;
-            console.log("Checked" + this.checked);
-            this.$emit('membersChanged', this.checked);
         }
+        // changed: function (value, id) {
+        //     if (this.checked.includes(id)){
+        //         if (value == false){
+        //             let index = this.checked.indexOf(id);
+        //             if (index > -1) {
+        //                 this.checked.splice(index, 1);
+        //             }
+        //         }
+        //     }else{
+        //         if (value == true){
+        //             this.checked.push(id)
+        //         }
+        //     }
+        //     //this.checkedAfter = this.checked;
+        //     console.log("Checked" + this.checked);
+        //     this.$emit('membersChanged', this.checked);
+        // }
+
 
     },
-    mounted: function mounted() {},
-    created: function created() {
-        var _this2 = this;
+    mounted: function mounted() {
+        this.getAllFriends();
+        window.Echo.channel('coords-changed').listen('CoordsChanged', function (_ref) {
+            var lat = _ref.lat,
+                lng = _ref.lng,
+                time = _ref.time,
+                user_id = _ref.user_id;
 
-        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('roomChanged', function (id) {
-            _this2.getMembersFriends(id);
+            console.log(lat);
+            console.log(lng);
+            console.log(time);
+            console.log(user_id);
+            // if ((typeof members) == "object"){
+            //     if (members.includes(this.authId)){
+            //         //this.roomChanged(this.selectedRoom.id);
+            //         this.getRooms();
+            //         console.log('Updated');
+            //     }
+            // }else{
+            //     console.log('Removed');
+            //     this.members = [];
+            //     let index = this.rooms.indexOf(members);
+            //     if (index > -1) {
+            //         this.rooms.splice(index, 1);
+            //     }
+            // }
         });
+    },
+    created: function created() {
+        // eventBus.$on('roomChanged',  (id)=> {
+        //     this.getMembersFriends(id);
+        // });
+
     }
 });
 
@@ -60647,62 +60720,7 @@ var render = function() {
                     _vm._v(" "),
                     _c("td", [_vm._v("{{}}")]),
                     _vm._v(" "),
-                    _c("td", [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.checkedAfter[friend.id],
-                            expression: "checkedAfter[friend.id]"
-                          }
-                        ],
-                        attrs: { type: "checkbox" },
-                        domProps: {
-                          checked: Array.isArray(_vm.checkedAfter[friend.id])
-                            ? _vm._i(_vm.checkedAfter[friend.id], null) > -1
-                            : _vm.checkedAfter[friend.id]
-                        },
-                        on: {
-                          change: [
-                            function($event) {
-                              var $$a = _vm.checkedAfter[friend.id],
-                                $$el = $event.target,
-                                $$c = $$el.checked ? true : false
-                              if (Array.isArray($$a)) {
-                                var $$v = null,
-                                  $$i = _vm._i($$a, $$v)
-                                if ($$el.checked) {
-                                  $$i < 0 &&
-                                    _vm.$set(
-                                      _vm.checkedAfter,
-                                      friend.id,
-                                      $$a.concat([$$v])
-                                    )
-                                } else {
-                                  $$i > -1 &&
-                                    _vm.$set(
-                                      _vm.checkedAfter,
-                                      friend.id,
-                                      $$a
-                                        .slice(0, $$i)
-                                        .concat($$a.slice($$i + 1))
-                                    )
-                                }
-                              } else {
-                                _vm.$set(_vm.checkedAfter, friend.id, $$c)
-                              }
-                            },
-                            function($event) {
-                              _vm.changed(
-                                _vm.checkedAfter[friend.id],
-                                friend.id
-                              )
-                            }
-                          ]
-                        }
-                      })
-                    ])
+                    _c("td")
                   ])
                 }),
                 0

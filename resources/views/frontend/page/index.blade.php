@@ -10,7 +10,6 @@
 
             <h3>Map</h3>
             <map-component  ref="foo"></map-component>
-            <div style="height: 300px" id="map"></div>
         </div>
         <div class="col-md-6">
 
@@ -20,11 +19,6 @@
 
         </div>
     </div>
-
-
-
-
-
 
 @endsection
 

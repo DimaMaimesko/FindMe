@@ -27,9 +27,9 @@
                                 <td>{{ friend.name }}</td>
                                 <td>{{}}</td>
                                 <td>
-                                    <input
-                                        @change="changed(checkedAfter[friend.id], friend.id)"
-                                        v-model="checkedAfter[friend.id]" type="checkbox">
+                                    <!--<input-->
+                                        <!--@change="changed(checkedAfter[friend.id], friend.id)"-->
+                                        <!--v-model="checkedAfter[friend.id]" type="checkbox">-->
                                 </td>
                             </tr>
 
@@ -48,61 +48,81 @@
     export default {
 
         props: [
-            'roomId',
         ],
 
         data: function(){
             return {
                 friends: [],
-                checked: [],
-                checkedAfter: [],
+                // checked: [],
+                // checkedAfter: [],
             }
         },
         methods: {
-            getMembersFriends:  function(id) {
-                console.log(id);
+            getAllFriends:  function() {
+                // console.log(id);
                 axios({
                     method: 'get',
-                    url:    '/frontend/chat/rooms/get-members-friends',
-                    params: {room_id: id}
+                    url:    '/frontend/map/get-all-friends',
+                    //params: {room_id: id}
                 }).then((response) => {
-                    this.friends = response.data.friends.friends;
-                    this.checked = response.data.checked;
-                    this.checkedAfter = [];
-                    this.checked.forEach((item, i) => {
-                        this.checkedAfter[item] = true;
-                    });
-                    console.log('checked');
-                    console.log(this.checked);
+                    this.friends = response.data.friends;
+                    // this.checked = response.data.checked;
+                    // this.checkedAfter = [];
+                    // this.checked.forEach((item, i) => {
+                    //     this.checkedAfter[item] = true;
+                    // });
+                    // console.log('checked');
+                    // console.log(this.checked);
                 });
             },
-            changed: function (value, id) {
-                if (this.checked.includes(id)){
-                    if (value == false){
-                        let index = this.checked.indexOf(id);
-                        if (index > -1) {
-                            this.checked.splice(index, 1);
-                        }
-                    }
-                }else{
-                    if (value == true){
-                        this.checked.push(id)
-                    }
-                }
-                //this.checkedAfter = this.checked;
-                console.log("Checked" + this.checked);
-                this.$emit('membersChanged', this.checked);
-            }
+            // changed: function (value, id) {
+            //     if (this.checked.includes(id)){
+            //         if (value == false){
+            //             let index = this.checked.indexOf(id);
+            //             if (index > -1) {
+            //                 this.checked.splice(index, 1);
+            //             }
+            //         }
+            //     }else{
+            //         if (value == true){
+            //             this.checked.push(id)
+            //         }
+            //     }
+            //     //this.checkedAfter = this.checked;
+            //     console.log("Checked" + this.checked);
+            //     this.$emit('membersChanged', this.checked);
+            // }
 
 
         },
         mounted() {
+            this.getAllFriends();
+            window.Echo.channel('coords-changed').listen('CoordsChanged', ({lat, lng, time, user_id}) => {
+                console.log(lat);
+                console.log(lng);
+                console.log(time);
+                console.log(user_id);
+                // if ((typeof members) == "object"){
+                //     if (members.includes(this.authId)){
+                //         //this.roomChanged(this.selectedRoom.id);
+                //         this.getRooms();
+                //         console.log('Updated');
+                //     }
+                // }else{
+                //     console.log('Removed');
+                //     this.members = [];
+                //     let index = this.rooms.indexOf(members);
+                //     if (index > -1) {
+                //         this.rooms.splice(index, 1);
+                //     }
+                // }
 
+            });
         },
         created() {
-            eventBus.$on('roomChanged',  (id)=> {
-                this.getMembersFriends(id);
-            });
+            // eventBus.$on('roomChanged',  (id)=> {
+            //     this.getMembersFriends(id);
+            // });
 
         }
     }

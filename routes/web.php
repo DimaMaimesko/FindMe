@@ -58,6 +58,9 @@ Route::group([
     Route::get('/chat/rooms/get-friends', 'Chat\RoomsController@getFriends')->name('chat.rooms.get-friends');
     Route::get('/chat/rooms/get-members-friends', 'Chat\RoomsController@getMembersFriends')->name('chat.rooms.get-members-friends');
 
+    Route::get('/map/get-all-friends', 'Map\MapController@getAllFriends')->name('map.get-all-friends');
+    Route::post('/map/write-new-pos', 'Map\MapController@writeNewPosition')->name('map.write-new-pos');
+
 });
 
 
