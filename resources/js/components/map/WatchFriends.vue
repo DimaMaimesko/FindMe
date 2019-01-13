@@ -33,7 +33,7 @@
                                         v-model="checkedAfter[friend.id]" type="checkbox">
                                 </td>
                                 <td>
-                                    <button v-if="checkedAfter[friend.id]" @click="showFriendOnMap(friend)">Find</button>
+                                    <button v-if="checkedAfter[friend.id]" @click="locateFriend(friend)">Find</button>
                                 </td>
                             </tr>
 
@@ -95,8 +95,8 @@
                 }
 
             },
-            showFriendOnMap: function (friend) {
-                eventBus.$emit('showFriendOnMap', friend);
+            locateFriend: function (friend) {
+                eventBus.$emit('locateFriend', friend);
             },
 
             changed: function (value, friend) {

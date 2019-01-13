@@ -60003,7 +60003,7 @@ exports = module.exports = __webpack_require__(67)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -60416,29 +60416,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 var coords = { lat: lat, lng: lng };
                 _this.addMarkerToArray(coords, moovingFriend.last_seen, moovingFriend);
             }
-        }),
-
-        // eventBus.$on('friendsToWatchChanged', (checked)=>{
-        //     this.checked = checked;
-        //     eventBus.$emit('getFriendsAgain');
-        //     // console.log(checked);
-        //     // console.log(this.markers);
-        //     // checked.forEach((element)=> {
-        //     //     console.log(element);
-        //     //     if(typeof this.markers[element] === 'undefined') {
-        //     //         // does not exist
-        //     //         eventBus.$emit('getFriendsAgain');
-        //     //     }
-        //     //     else {
-        //     //         // does exist
-        //     //         // this.markers[element] = null;
-        //     //         // this.markers[element].setMap(null);
-        //     //         // this.markers[element] = null;
-        //     //     }
-        //     // })
-        // }),
-        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('watchingAnotherUserSet', function () {
-            _this.wathingAnotherUser = 'true';
+        }), __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('locateFriend', function (friend) {
+            _this.wathingAnotherUser = "Yes";
+            var lat = parseFloat(JSON.parse(friend.coords.lat));
+            var lng = parseFloat(JSON.parse(friend.coords.lng));
+            var coords = { lat: lat, lng: lng };
+            _this.map.setCenter(coords);
+            console.log(friend.position);
         });
     },
 
@@ -60459,16 +60443,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         lng: position.coords.longitude
                     };
                     _this2.sendPosToServer(pos);
-                    _this2.infoWindow.setPosition(pos);
-                    _this2.infoWindow.setContent("It's Me");
-                    _this2.infoWindow.open(_this2.map);
-                    if (_this2.wathingAnotherUser === 'start' || _this2.wathingAnotherUser === 'false') _this2.map.setCenter(pos);
-                    if (!_this2.isEmpty(_this2.markerAuth)) {
-                        _this2.markerAuth.setMap(null);
-                        _this2.markerAuth = null;
+
+                    if (_this2.wathingAnotherUser === 'start' || _this2.wathingAnotherUser === 'false') {
+                        _this2.infoWindow.setPosition(pos);
+                        _this2.infoWindow.setContent("It's Me");
+                        _this2.infoWindow.open(_this2.map);
+                        _this2.map.setCenter(pos);
+                        if (!_this2.isEmpty(_this2.markerAuth)) {
+                            _this2.markerAuth.setMap(null);
+                            _this2.markerAuth = null;
+                        }
+                        _this2.markerAuth = new google.maps.Marker({ position: pos, title: "I'm here" });
+                        _this2.markerAuth.setMap(_this2.map);
                     }
-                    _this2.markerAuth = new google.maps.Marker({ position: pos, title: "I'm here" });
-                    _this2.markerAuth.setMap(_this2.map);
                 }, function () {
                     _this2.handleLocationError(true, _this2.infoWindow, _this2.map.getCenter());
                 });
@@ -60754,8 +60741,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 return time;
             }
         },
-        showFriendOnMap: function showFriendOnMap(friend) {
-            __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('showFriendOnMap', friend);
+        locateFriend: function locateFriend(friend) {
+            __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('locateFriend', friend);
         },
 
         changed: function changed(value, friend) {
@@ -60913,7 +60900,7 @@ var render = function() {
                             {
                               on: {
                                 click: function($event) {
-                                  _vm.showFriendOnMap(friend)
+                                  _vm.locateFriend(friend)
                                 }
                               }
                             },

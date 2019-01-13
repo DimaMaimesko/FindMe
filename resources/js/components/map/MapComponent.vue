@@ -59,30 +59,14 @@
                 }
             }),
 
-            // eventBus.$on('friendsToWatchChanged', (checked)=>{
-            //     this.checked = checked;
-            //     eventBus.$emit('getFriendsAgain');
-            //     // console.log(checked);
-            //     // console.log(this.markers);
-            //     // checked.forEach((element)=> {
-            //     //     console.log(element);
-            //     //     if(typeof this.markers[element] === 'undefined') {
-            //     //         // does not exist
-            //     //         eventBus.$emit('getFriendsAgain');
-            //     //     }
-            //     //     else {
-            //     //         // does exist
-            //     //         // this.markers[element] = null;
-            //     //         // this.markers[element].setMap(null);
-            //     //         // this.markers[element] = null;
-            //     //     }
-            //     // })
-            // }),
-                eventBus.$on('watchingAnotherUserSet', ()=>{
-                    this.wathingAnotherUser = 'true';
-
-            })
-
+            eventBus.$on('locateFriend', (friend)=>{
+                this.wathingAnotherUser = "Yes";
+                let lat = parseFloat(JSON.parse(friend.coords.lat));
+                let lng = parseFloat(JSON.parse(friend.coords.lng));
+                let coords = {lat: lat,lng: lng};
+                this.map.setCenter(coords);
+                console.log(friend.position);
+            });
 
         },
         methods: {
@@ -100,16 +84,20 @@
                          lng: position.coords.longitude
                      };
                      this.sendPosToServer(pos);
-                     this.infoWindow.setPosition(pos);
-                     this.infoWindow.setContent("It's Me");
-                     this.infoWindow.open(this.map);
-                     if ((this.wathingAnotherUser === 'start') || (this.wathingAnotherUser === 'false'))this.map.setCenter(pos);
-                     if (!this.isEmpty(this.markerAuth)){
-                         this.markerAuth.setMap(null);
-                         this.markerAuth = null;
+
+                     if ((this.wathingAnotherUser === 'start') || (this.wathingAnotherUser === 'false')){
+                         this.infoWindow.setPosition(pos);
+                         this.infoWindow.setContent("It's Me");
+                         this.infoWindow.open(this.map);
+                         this.map.setCenter(pos);
+                         if (!this.isEmpty(this.markerAuth)){
+                             this.markerAuth.setMap(null);
+                             this.markerAuth = null;
+                         }
+                         this.markerAuth = new google.maps.Marker({position: pos, title:"I'm here"});
+                         this.markerAuth.setMap(this.map);
                      }
-                     this.markerAuth = new google.maps.Marker({position: pos, title:"I'm here"});
-                     this.markerAuth.setMap(this.map);
+
                  }, ()=> {
                      this.handleLocationError(true, this.infoWindow, this.map.getCenter());
                  });
