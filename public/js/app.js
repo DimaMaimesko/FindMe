@@ -60003,7 +60003,7 @@ exports = module.exports = __webpack_require__(67)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* Always set the map height explicitly to define the size of the div\n * element that contains the map. */\n/*#map {*/\n    /*height: 100%;*/\n/*}*/\n/* Optional: Makes the sample page fill the window. */\n/*html, body {*/\n    /*height: 100%;*/\n    /*margin: 0;*/\n    /*padding: 0;*/\n/*}*/\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -60357,6 +60357,7 @@ module.exports = function listToStyles (parentId, list) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(2);
 //
 //
 //
@@ -60366,6 +60367,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -60379,16 +60382,69 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             map: {},
             infoWindow: {},
             pos: {},
-            marker: {},
+            markerAuth: {},
+            markers: [],
             oldPosition: {
                 lat: 0,
                 lng: 0
-            }
+            },
+            markersToMap: {},
+            checked: [],
+            wathingAnotherUser: 'start'
         };
     },
+    created: function created() {
+        var _this = this;
+
+        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('addFriendOnMap', function (params) {
+            _this.checked = params[1];
+            var friend = params[0];
+            console.log(friend.coords);
+            var coords = void 0;
+            var lat = parseFloat(JSON.parse(friend.coords.lat));
+            var lng = parseFloat(JSON.parse(friend.coords.lng));
+            coords = { lat: lat, lng: lng };
+            var last_seen = JSON.parse(friend.last_seen);
+            _this.addMarkerToArray(coords, last_seen, friend);
+        }), __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('removeFriendFromMap', function (params) {
+            var friend = params[0];
+            _this.removeMarkerFromArray(friend);
+        }), __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('showFriendOnMap', function (moovingFriend) {
+            if (_this.checked.includes(moovingFriend.id)) {
+                var lat = parseFloat(JSON.parse(moovingFriend.coords.lat));
+                var lng = parseFloat(JSON.parse(moovingFriend.coords.lng));
+                var coords = { lat: lat, lng: lng };
+                _this.addMarkerToArray(coords, moovingFriend.last_seen, moovingFriend);
+            }
+        }),
+
+        // eventBus.$on('friendsToWatchChanged', (checked)=>{
+        //     this.checked = checked;
+        //     eventBus.$emit('getFriendsAgain');
+        //     // console.log(checked);
+        //     // console.log(this.markers);
+        //     // checked.forEach((element)=> {
+        //     //     console.log(element);
+        //     //     if(typeof this.markers[element] === 'undefined') {
+        //     //         // does not exist
+        //     //         eventBus.$emit('getFriendsAgain');
+        //     //     }
+        //     //     else {
+        //     //         // does exist
+        //     //         // this.markers[element] = null;
+        //     //         // this.markers[element].setMap(null);
+        //     //         // this.markers[element] = null;
+        //     //     }
+        //     // })
+        // }),
+        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('watchingAnotherUserSet', function () {
+            _this.wathingAnotherUser = 'true';
+        });
+    },
+
     methods: {
         initMap: function initMap() {
-            var _this = this;
+            var _this2 = this;
 
             this.map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: -34.397, lng: 150.644 },
@@ -60397,27 +60453,59 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.infoWindow = new google.maps.InfoWindow();
             // Try HTML5 geolocation.
             if (navigator.geolocation) {
-
                 navigator.geolocation.watchPosition(function (position) {
                     var pos = {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
                     };
-                    _this.sendPosToServer(pos);
-                    _this.infoWindow.setPosition(pos);
-                    _this.infoWindow.setContent('Location found.');
-                    _this.infoWindow.open(_this.map);
-                    _this.map.setCenter(pos);
-                    _this.marker = new google.maps.Marker({ position: pos, map: _this.map });
+                    _this2.sendPosToServer(pos);
+                    _this2.infoWindow.setPosition(pos);
+                    _this2.infoWindow.setContent("It's Me");
+                    _this2.infoWindow.open(_this2.map);
+                    if (_this2.wathingAnotherUser === 'start' || _this2.wathingAnotherUser === 'false') _this2.map.setCenter(pos);
+                    if (!_this2.isEmpty(_this2.markerAuth)) {
+                        _this2.markerAuth.setMap(null);
+                        _this2.markerAuth = null;
+                    }
+                    _this2.markerAuth = new google.maps.Marker({ position: pos, title: "I'm here" });
+                    _this2.markerAuth.setMap(_this2.map);
                 }, function () {
-                    _this.handleLocationError(true, _this.infoWindow, _this.map.getCenter());
+                    _this2.handleLocationError(true, _this2.infoWindow, _this2.map.getCenter());
                 });
             } else {
                 // Browser doesn't support Geolocation
                 this.handleLocationError(false, this.infoWindow, this.map.getCenter());
             };
-            this.addMarker({ lat: -34.497, lng: 150.644 });
-            this.addMarker({ lat: -34.597, lng: 150.644 });
+        },
+
+        addMarkerToArray: function addMarkerToArray(coords, last_seen, friend) {
+            if (!this.isEmpty(this.markers)) {
+
+                if (typeof this.markers[friend.id] !== 'undefined') {
+                    this.markers[friend.id].setMap(null);
+                    this.markers[friend.id] = null;
+                };
+
+                if (this.checked.includes(friend.id)) {
+                    this.markers[friend.id] = {
+                        'coords': coords,
+
+                        'last_seen': last_seen
+                    };
+
+                    this.markers[friend.id] = new google.maps.Marker({ position: coords, title: friend.name });
+                    this.markers[friend.id].setMap(this.map);
+                }
+            }
+        },
+        removeMarkerFromArray: function removeMarkerFromArray(friend) {
+            if (!this.isEmpty(this.markers)) {
+
+                if (typeof this.markers[friend.id] !== 'undefined') {
+                    this.markers[friend.id].setMap(null);
+                    //this.markers[friend.id] = null;
+                };
+            }
         },
 
         addMarker: function addMarker(coords) {
@@ -60433,18 +60521,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.oldPosition.lng = newLng;
         },
         sendNewCoordinates: function sendNewCoordinates(newLat, newLng) {
-            var _this2 = this;
+            var _this3 = this;
 
             axios({
                 method: 'post',
                 url: '/frontend/map/write-new-pos',
                 params: { lat: newLat, lng: newLng }
             }).then(function (response) {
+                if (_this3.wathingAnotherUser === 'false') {
+                    _this3.map.setCenter({
+                        lat: parseFloat(newLat),
+                        lng: parseFloat(newLng)
+                    });
+                }
                 console.log(response.data.newPosition);
-                console.log(_this2.timeConverter(response.data.newTime));
+                console.log(_this3.timeConverter(response.data.newTime));
             });
-            // eventBus.$emit('resetCheckedFriends');
-            // this.roomName = '';
+        },
+        isEmpty: function isEmpty(obj) {
+            for (var prop in obj) {
+                if (obj.hasOwnProperty(prop)) return false;
+            }
+            return JSON.stringify(obj) === JSON.stringify({});
+        },
+        findMe: function findMe() {
+            this.wathingAnotherUser = 'false';
         },
 
         handleLocationError: function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -60476,18 +60577,23 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "container" }, [
+    _c(
+      "button",
+      {
+        on: {
+          click: function($event) {
+            _vm.findMe()
+          }
+        }
+      },
+      [_vm._v("Find Me")]
+    ),
+    _vm._v(" "),
+    _c("div", { staticStyle: { height: "300px" }, attrs: { id: "map" } })
+  ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticStyle: { height: "300px" }, attrs: { id: "map" } })
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -60596,6 +60702,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -60604,9 +60714,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     data: function data() {
         return {
-            friends: []
-            // checked: [],
-            // checkedAfter: [],
+            friends: [],
+            checked: [],
+            checkedAfter: []
         };
     },
     methods: {
@@ -60620,6 +60730,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 //params: {room_id: id}
             }).then(function (response) {
                 _this.friends = response.data.friends;
+
                 // this.checked = response.data.checked;
                 // this.checkedAfter = [];
                 // this.checked.forEach((item, i) => {
@@ -60628,30 +60739,51 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 // console.log('checked');
                 // console.log(this.checked);
             });
-        }
-        // changed: function (value, id) {
-        //     if (this.checked.includes(id)){
-        //         if (value == false){
-        //             let index = this.checked.indexOf(id);
-        //             if (index > -1) {
-        //                 this.checked.splice(index, 1);
-        //             }
-        //         }
-        //     }else{
-        //         if (value == true){
-        //             this.checked.push(id)
-        //         }
-        //     }
-        //     //this.checkedAfter = this.checked;
-        //     console.log("Checked" + this.checked);
-        //     this.$emit('membersChanged', this.checked);
-        // }
+        },
+        timeConverter: function timeConverter(UNIX_timestamp) {
+            if (UNIX_timestamp) {
+                var a = new Date(UNIX_timestamp * 1000);
+                var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                var year = a.getFullYear();
+                var month = months[a.getMonth()];
+                var date = ('0' + a.getDate()).slice(-2);
+                var hour = ('0' + a.getHours()).slice(-2);
+                var min = ('0' + a.getMinutes()).slice(-2);
+                //let sec = a.getSeconds();
+                var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min;
+                return time;
+            }
+        },
+        showFriendOnMap: function showFriendOnMap(friend) {
+            __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('showFriendOnMap', friend);
+        },
 
+        changed: function changed(value, friend) {
+            if (this.checked.includes(friend.id)) {
+                if (value == false) {
+                    var index = this.checked.indexOf(friend.id);
+                    if (index > -1) {
+                        this.checked.splice(index, 1);
+                    }
+                }
+            } else {
+                if (value == true) {
+                    this.checked.push(friend.id);
+                }
+            }
+            if (value) {
+                __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('addFriendOnMap', [friend, this.checked]);
+            } else {
+                __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('removeFriendFromMap', [friend, this.checked]);
+            }
+        }
 
     },
     mounted: function mounted() {
+        var _this2 = this;
+
         this.getAllFriends();
-        window.Echo.channel('coords-changed').listen('CoordsChanged', function (_ref) {
+        window.Echo.channel('private-coordchanged').listen('CoordChanged', function (_ref) {
             var lat = _ref.lat,
                 lng = _ref.lng,
                 time = _ref.time,
@@ -60661,27 +60793,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             console.log(lng);
             console.log(time);
             console.log(user_id);
-            // if ((typeof members) == "object"){
-            //     if (members.includes(this.authId)){
-            //         //this.roomChanged(this.selectedRoom.id);
-            //         this.getRooms();
-            //         console.log('Updated');
-            //     }
-            // }else{
-            //     console.log('Removed');
-            //     this.members = [];
-            //     let index = this.rooms.indexOf(members);
-            //     if (index > -1) {
-            //         this.rooms.splice(index, 1);
-            //     }
-            // }
+            var moovingFriend = _this2.friends.find(function (friend) {
+                return friend.id == user_id;
+            });
+            var moovingFriendIndex = _this2.friends.findIndex(function (friend) {
+                return friend.id == user_id;
+            });
+            moovingFriend.coords = { lat: lat, lng: lng };
+            moovingFriend.last_seen = time;
+            moovingFriend.user_id = user_id;
+            _this2.friends[moovingFriendIndex] = moovingFriend;
+            __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('showFriendOnMap', moovingFriend);
         });
     },
     created: function created() {
-        // eventBus.$on('roomChanged',  (id)=> {
-        //     this.getMembersFriends(id);
-        // });
+        var _this3 = this;
 
+        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('getFriendsAgain', function () {
+            _this3.getAllFriends;
+        });
     }
 });
 
@@ -60718,9 +60848,79 @@ var render = function() {
                     _vm._v(" "),
                     _c("td", [_vm._v(_vm._s(friend.name))]),
                     _vm._v(" "),
-                    _c("td", [_vm._v("{{}}")]),
+                    _c("td", [
+                      _vm._v(_vm._s(_vm.timeConverter(friend.last_seen)))
+                    ]),
                     _vm._v(" "),
-                    _c("td")
+                    _c("td", [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.checkedAfter[friend.id],
+                            expression: "checkedAfter[friend.id]"
+                          }
+                        ],
+                        attrs: { type: "checkbox" },
+                        domProps: {
+                          checked: Array.isArray(_vm.checkedAfter[friend.id])
+                            ? _vm._i(_vm.checkedAfter[friend.id], null) > -1
+                            : _vm.checkedAfter[friend.id]
+                        },
+                        on: {
+                          change: [
+                            function($event) {
+                              var $$a = _vm.checkedAfter[friend.id],
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = null,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    _vm.$set(
+                                      _vm.checkedAfter,
+                                      friend.id,
+                                      $$a.concat([$$v])
+                                    )
+                                } else {
+                                  $$i > -1 &&
+                                    _vm.$set(
+                                      _vm.checkedAfter,
+                                      friend.id,
+                                      $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1))
+                                    )
+                                }
+                              } else {
+                                _vm.$set(_vm.checkedAfter, friend.id, $$c)
+                              }
+                            },
+                            function($event) {
+                              _vm.changed(_vm.checkedAfter[friend.id], friend)
+                            }
+                          ]
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _vm.checkedAfter[friend.id]
+                        ? _c(
+                            "button",
+                            {
+                              on: {
+                                click: function($event) {
+                                  _vm.showFriendOnMap(friend)
+                                }
+                              }
+                            },
+                            [_vm._v("Find")]
+                          )
+                        : _vm._e()
+                    ])
                   ])
                 }),
                 0
@@ -60745,7 +60945,9 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", [_vm._v("Last Seen")]),
         _vm._v(" "),
-        _c("th", [_vm._v("add")])
+        _c("th", [_vm._v("Show")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Find")])
       ])
     ])
   }

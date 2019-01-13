@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef5a9872a6f8945bdedd46a16a5417d0",
+    "content-hash": "fa38fd786c5512ce6fd52646190cf716",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2574,16 +2574,16 @@
         },
         {
             "name": "pusher/pusher-php-server",
-            "version": "v3.2.0",
+            "version": "v3.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pusher/pusher-http-php.git",
-                "reference": "4da4d208fe13fd2ff71ede5063a3456f23f38cf7"
+                "reference": "5eb4ea29db6d61484a64ae6b0c249aa9d1c84943"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/4da4d208fe13fd2ff71ede5063a3456f23f38cf7",
-                "reference": "4da4d208fe13fd2ff71ede5063a3456f23f38cf7",
+                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/5eb4ea29db6d61484a64ae6b0c249aa9d1c84943",
+                "reference": "5eb4ea29db6d61484a64ae6b0c249aa9d1c84943",
                 "shasum": ""
             },
             "require": {
@@ -2593,7 +2593,7 @@
                 "psr/log": "^1.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8 || ^5.7"
+                "phpunit/phpunit": "^4.8.35 || ^5.7"
             },
             "type": "library",
             "extra": {
@@ -2624,7 +2624,7 @@
                 "rest",
                 "trigger"
             ],
-            "time": "2018-08-13T14:57:32+00:00"
+            "time": "2019-01-03T11:08:11+00:00"
         },
         {
             "name": "ralouphie/getallheaders",

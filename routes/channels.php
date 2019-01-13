@@ -23,8 +23,8 @@ Broadcast::channel('room.{room_id}', function ($user, $room_id) {
     ];
 
 });
-//Broadcast::channel('update-rooms', function () {
-//
-//    return true;
-//
-//});
+Broadcast::channel('coordchanged', function () {
+
+    return true;
+
+});

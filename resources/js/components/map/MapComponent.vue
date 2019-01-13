@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <button @click="findMe()">Find Me</button>
 
         <div style="height: 300px" id="map"></div>
 
@@ -8,24 +9,82 @@
 </template>
 
 <script>
+    import { eventBus } from "../../app";
 
     export default {
         mounted() {
             console.log('Map mounted.')
         },
 
-     data: function(){
-         return {
-             map:{},
-             infoWindow: {},
-             pos: {},
-             marker: {},
-             oldPosition: {
-                 lat: 0,
-                 lng: 0
-             },
-         }
-     },
+        data: function(){
+             return {
+                 map:{},
+                 infoWindow: {},
+                 pos: {},
+                 markerAuth: {},
+                 markers: [],
+                 oldPosition: {
+                     lat: 0,
+                     lng: 0
+                 },
+                 markersToMap: {},
+                 checked: [],
+                 wathingAnotherUser: 'start',
+             }
+        },
+        created() {
+            eventBus.$on('addFriendOnMap', (params)=>{
+                this.checked = params[1];
+                let friend = params[0];
+                console.log(friend.coords);
+                let coords;
+                    let lat = parseFloat(JSON.parse(friend.coords.lat));
+                    let lng = parseFloat(JSON.parse(friend.coords.lng));
+                    coords = {lat: lat,lng: lng};
+                let last_seen = JSON.parse(friend.last_seen);
+                this.addMarkerToArray(coords, last_seen, friend) ;
+            }),
+
+            eventBus.$on('removeFriendFromMap', (params)=>{
+                let friend = params[0];
+                this.removeMarkerFromArray(friend) ;
+            }),
+
+            eventBus.$on('showFriendOnMap', (moovingFriend)=>{
+                if (this.checked.includes(moovingFriend.id)){
+                    let lat = parseFloat(JSON.parse(moovingFriend.coords.lat));
+                    let lng = parseFloat(JSON.parse(moovingFriend.coords.lng));
+                    let coords = {lat: lat,lng: lng};
+                    this.addMarkerToArray(coords, moovingFriend.last_seen, moovingFriend) ;
+                }
+            }),
+
+            // eventBus.$on('friendsToWatchChanged', (checked)=>{
+            //     this.checked = checked;
+            //     eventBus.$emit('getFriendsAgain');
+            //     // console.log(checked);
+            //     // console.log(this.markers);
+            //     // checked.forEach((element)=> {
+            //     //     console.log(element);
+            //     //     if(typeof this.markers[element] === 'undefined') {
+            //     //         // does not exist
+            //     //         eventBus.$emit('getFriendsAgain');
+            //     //     }
+            //     //     else {
+            //     //         // does exist
+            //     //         // this.markers[element] = null;
+            //     //         // this.markers[element].setMap(null);
+            //     //         // this.markers[element] = null;
+            //     //     }
+            //     // })
+            // }),
+                eventBus.$on('watchingAnotherUserSet', ()=>{
+                    this.wathingAnotherUser = 'true';
+
+            })
+
+
+        },
         methods: {
           initMap: function() {
              this.map = new google.maps.Map(document.getElementById('map'), {
@@ -35,7 +94,6 @@
              this.infoWindow = new google.maps.InfoWindow;
              // Try HTML5 geolocation.
              if (navigator.geolocation) {
-
                  navigator.geolocation.watchPosition((position)=> {
                      let pos = {
                          lat: position.coords.latitude,
@@ -43,11 +101,15 @@
                      };
                      this.sendPosToServer(pos);
                      this.infoWindow.setPosition(pos);
-                     this.infoWindow.setContent('Location found.');
+                     this.infoWindow.setContent("It's Me");
                      this.infoWindow.open(this.map);
-                     this.map.setCenter(pos);
-                     this.marker = new google.maps.Marker({position: pos, map: this.map});
-
+                     if ((this.wathingAnotherUser === 'start') || (this.wathingAnotherUser === 'false'))this.map.setCenter(pos);
+                     if (!this.isEmpty(this.markerAuth)){
+                         this.markerAuth.setMap(null);
+                         this.markerAuth = null;
+                     }
+                     this.markerAuth = new google.maps.Marker({position: pos, title:"I'm here"});
+                     this.markerAuth.setMap(this.map);
                  }, ()=> {
                      this.handleLocationError(true, this.infoWindow, this.map.getCenter());
                  });
@@ -55,8 +117,37 @@
                  // Browser doesn't support Geolocation
                  this.handleLocationError(false, this.infoWindow, this.map.getCenter());
              };
-             this.addMarker({lat: -34.497, lng: 150.644});
-             this.addMarker({lat: -34.597, lng: 150.644});
+          },
+
+          addMarkerToArray: function(coords, last_seen, friend) {
+              if (!this.isEmpty(this.markers)){
+
+                  if ( typeof this.markers[friend.id] !== 'undefined'){
+                      this.markers[friend.id].setMap(null);
+                      this.markers[friend.id] = null;
+                  };
+
+                  if (this.checked.includes(friend.id)){
+                      this.markers[friend.id] = {
+                          'coords': coords,
+
+                          'last_seen': last_seen,
+                      };
+
+                      this.markers[friend.id] = new google.maps.Marker({position: coords, title:friend.name});
+                      this.markers[friend.id].setMap(this.map);
+                  }
+
+              }
+          },
+            removeMarkerFromArray: function(friend) {
+              if (!this.isEmpty(this.markers)){
+
+                  if ( typeof this.markers[friend.id] !== 'undefined'){
+                      this.markers[friend.id].setMap(null);
+                      //this.markers[friend.id] = null;
+                  };
+              }
           },
 
           addMarker: function(coords) {
@@ -78,12 +169,29 @@
                   url:    '/frontend/map/write-new-pos',
                   params: {lat: newLat, lng: newLng}
               }).then((response) => {
+                 if (this.wathingAnotherUser === 'false'){
+                     this.map.setCenter({
+                         lat: parseFloat(newLat),
+                         lng: parseFloat(newLng),
+                     });
+
+                 }
                  console.log(response.data.newPosition);
                  console.log(this.timeConverter(response.data.newTime));
               });
-              // eventBus.$emit('resetCheckedFriends');
-              // this.roomName = '';
           },
+            isEmpty: function(obj) {
+                 for(let prop in obj) {
+                      if(obj.hasOwnProperty(prop))
+                      return false;
+                 }
+                 return JSON.stringify(obj) === JSON.stringify({});
+            },
+            findMe: function() {
+                this.wathingAnotherUser = 'false';
+            },
+
+
 
          handleLocationError: function(browserHasGeolocation, infoWindow, pos) {
              infoWindow.setPosition(pos);
@@ -103,23 +211,12 @@
             let sec = a.getSeconds();
             let time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
             return time;
-    }
+         }
 
         }
     }
 </script>
 
 <style>
-    /* Always set the map height explicitly to define the size of the div
-     * element that contains the map. */
-    /*#map {*/
-        /*height: 100%;*/
-    /*}*/
-    /* Optional: Makes the sample page fill the window. */
-    /*html, body {*/
-        /*height: 100%;*/
-        /*margin: 0;*/
-        /*padding: 0;*/
-    /*}*/
 </style>
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Frontend\Map;
 
-use App\Events\CoordsChanged;
+use App\Events\CoordChanged;
 use App\Services\RelationsService;
 use App\Http\Controllers\Controller;
 use App\User;
@@ -25,6 +25,7 @@ class MapController extends Controller
         $ids = $this->relations->getFriendsIdsOf(Auth::id());
         if (!empty($ids)){
             $friends = User::whereIn('id', $ids)->get()->toArray();
+            //dump($friends);
             return ['friends' => $friends];
         }else{
             return ['friends' => []];
@@ -39,7 +40,8 @@ class MapController extends Controller
         $this->relations->writeTimeForAuth();
         $newPosition = $this->relations->getPositionForAuth();
         $newTime = $this->relations->getTimeForAuth();
-        event(new CoordsChanged($lat, $lng, $newTime, Auth::id()));
+        //event(new CoordChanged($lat, $lng, $newTime, Auth::id()));
+        broadcast(new CoordChanged($lat, $lng, $newTime, Auth::id()));
         return [
             'newPosition' => $newPosition,
             'newTime'     => $newTime,

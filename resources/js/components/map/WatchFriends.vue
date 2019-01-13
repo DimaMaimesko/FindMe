@@ -14,7 +14,8 @@
                                 <th style="width:100px">Photo</th>
                                 <th>Name</th>
                                 <th>Last Seen</th>
-                                <th>add</th>
+                                <th>Show</th>
+                                <th>Find</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -25,11 +26,14 @@
                                     </a>
                                 </td>
                                 <td>{{ friend.name }}</td>
-                                <td>{{}}</td>
+                                <td>{{timeConverter(friend.last_seen)}}</td>
                                 <td>
-                                    <!--<input-->
-                                        <!--@change="changed(checkedAfter[friend.id], friend.id)"-->
-                                        <!--v-model="checkedAfter[friend.id]" type="checkbox">-->
+                                    <input
+                                        @change="changed(checkedAfter[friend.id], friend)"
+                                        v-model="checkedAfter[friend.id]" type="checkbox">
+                                </td>
+                                <td>
+                                    <button v-if="checkedAfter[friend.id]" @click="showFriendOnMap(friend)">Find</button>
                                 </td>
                             </tr>
 
@@ -53,8 +57,8 @@
         data: function(){
             return {
                 friends: [],
-                // checked: [],
-                // checkedAfter: [],
+                 checked: [],
+                 checkedAfter: [],
             }
         },
         methods: {
@@ -66,6 +70,7 @@
                     //params: {room_id: id}
                 }).then((response) => {
                     this.friends = response.data.friends;
+
                     // this.checked = response.data.checked;
                     // this.checkedAfter = [];
                     // this.checked.forEach((item, i) => {
@@ -75,54 +80,71 @@
                     // console.log(this.checked);
                 });
             },
-            // changed: function (value, id) {
-            //     if (this.checked.includes(id)){
-            //         if (value == false){
-            //             let index = this.checked.indexOf(id);
-            //             if (index > -1) {
-            //                 this.checked.splice(index, 1);
-            //             }
-            //         }
-            //     }else{
-            //         if (value == true){
-            //             this.checked.push(id)
-            //         }
-            //     }
-            //     //this.checkedAfter = this.checked;
-            //     console.log("Checked" + this.checked);
-            //     this.$emit('membersChanged', this.checked);
-            // }
+            timeConverter: function (UNIX_timestamp){
+                if (UNIX_timestamp){
+                    let a = new Date(UNIX_timestamp * 1000);
+                    let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                    let year = a.getFullYear();
+                    let month = months[a.getMonth()];
+                    let date = ('0' + a.getDate()).slice(-2);
+                    let hour = ('0' + a.getHours()).slice(-2);
+                    let min = ('0' + a.getMinutes()).slice(-2);
+                    //let sec = a.getSeconds();
+                    let time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min;
+                    return time;
+                }
+
+            },
+            showFriendOnMap: function (friend) {
+                eventBus.$emit('showFriendOnMap', friend);
+            },
+
+            changed: function (value, friend) {
+                if (this.checked.includes(friend.id)){
+                    if (value == false){
+                        let index = this.checked.indexOf(friend.id);
+                        if (index > -1) {
+                            this.checked.splice(index, 1);
+                        }
+                    }
+                }else{
+                    if (value == true){
+                        this.checked.push(friend.id)
+                    }
+                }
+                if (value) {
+                    eventBus.$emit('addFriendOnMap', [friend, this.checked])
+                }else{
+                    eventBus.$emit('removeFriendFromMap', [friend, this.checked])
+                }
+            }
 
 
         },
         mounted() {
             this.getAllFriends();
-            window.Echo.channel('coords-changed').listen('CoordsChanged', ({lat, lng, time, user_id}) => {
+            window.Echo.channel('private-coordchanged').listen('CoordChanged', ({lat, lng, time, user_id}) => {
                 console.log(lat);
                 console.log(lng);
                 console.log(time);
                 console.log(user_id);
-                // if ((typeof members) == "object"){
-                //     if (members.includes(this.authId)){
-                //         //this.roomChanged(this.selectedRoom.id);
-                //         this.getRooms();
-                //         console.log('Updated');
-                //     }
-                // }else{
-                //     console.log('Removed');
-                //     this.members = [];
-                //     let index = this.rooms.indexOf(members);
-                //     if (index > -1) {
-                //         this.rooms.splice(index, 1);
-                //     }
-                // }
-
+                let moovingFriend = this.friends.find((friend)=>{
+                    return friend.id == user_id;
+                });
+                let moovingFriendIndex = this.friends.findIndex((friend)=>{
+                    return friend.id == user_id;
+                });
+                moovingFriend.coords = {lat: lat,lng: lng};
+                moovingFriend.last_seen = time;
+                moovingFriend.user_id = user_id;
+                this.friends[moovingFriendIndex] = moovingFriend;
+                eventBus.$emit('showFriendOnMap', moovingFriend);
             });
         },
         created() {
-            // eventBus.$on('roomChanged',  (id)=> {
-            //     this.getMembersFriends(id);
-            // });
+            eventBus.$on('getFriendsAgain',  ()=> {
+                this.getAllFriends;
+            });
 
         }
     }

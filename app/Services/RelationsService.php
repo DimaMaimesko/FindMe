@@ -65,6 +65,11 @@ class RelationsService
         return Redis::hget('coordinates', 'user:'.Auth::id());
     }
 
+    public function getPositionFor($id)
+    {
+        return Redis::hget('coordinates', 'user:'.$id);
+    }
+
     public function writeTimeForAuth()
     {
         Redis::hset('time', 'user:'.Auth::id(), time());
@@ -73,6 +78,11 @@ class RelationsService
     public function getTimeForAuth()
     {
         return Redis::hget('time', 'user:'.Auth::id());
+    }
+
+    public function getTimeFor($id)
+    {
+        return Redis::hget('time', 'user:'.$id);
     }
 
 
