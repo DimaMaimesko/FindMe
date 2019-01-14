@@ -63,10 +63,10 @@
 
             eventBus.$on('locateFriend', (friend)=>{
                 this.wathingAnotherUser = "Yes";
-            let lat = friend.coords.lat;
-            let lng = friend.coords.lng;
-            lat = parseFloat(lat);
-            lng = parseFloat(lng);
+                let lat = friend.coords.lat;
+                let lng = friend.coords.lng;
+                lat = parseFloat(lat);
+                lng = parseFloat(lng);
                 let coords = {lat: lat,lng: lng};
                 this.map.setCenter(coords);
             });
