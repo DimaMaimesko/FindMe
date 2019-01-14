@@ -36,13 +36,13 @@
             eventBus.$on('addFriendOnMap', (params)=>{
                 this.checked = params[1];
                 let friend = params[0];
-                console.log(friend.coords);
-                let coords;
-                    let lat = parseFloat(JSON.parse(friend.coords.lat));
-                    let lng = parseFloat(JSON.parse(friend.coords.lng));
-                    coords = {lat: lat,lng: lng};
+                let lat = friend.coords.lat;
+                let lng = friend.coords.lng;
+                lat = parseFloat(lat);
+                lng = parseFloat(lng);
+                let coords = {lat: lat,lng: lng};
                 let last_seen = JSON.parse(friend.last_seen);
-                this.addMarkerToArray(coords, last_seen, friend) ;
+                this.addMarkerToArray(coords, last_seen, friend);
             }),
 
             eventBus.$on('removeFriendFromMap', (params)=>{
@@ -52,20 +52,23 @@
 
             eventBus.$on('showFriendOnMap', (moovingFriend)=>{
                 if (this.checked.includes(moovingFriend.id)){
-                    let lat = parseFloat(JSON.parse(moovingFriend.coords.lat));
-                    let lng = parseFloat(JSON.parse(moovingFriend.coords.lng));
+                    let lat = moovingFriend.coords.lat;
+                    let lng = moovingFriend.coords.lng;
+                    lat = parseFloat(lat);
+                    lng = parseFloat(lng);
                     let coords = {lat: lat,lng: lng};
                     this.addMarkerToArray(coords, moovingFriend.last_seen, moovingFriend) ;
                 }
-            }),
+            });
 
             eventBus.$on('locateFriend', (friend)=>{
                 this.wathingAnotherUser = "Yes";
-                let lat = parseFloat(JSON.parse(friend.coords.lat));
-                let lng = parseFloat(JSON.parse(friend.coords.lng));
+            let lat = friend.coords.lat;
+            let lng = friend.coords.lng;
+            lat = parseFloat(lat);
+            lng = parseFloat(lng);
                 let coords = {lat: lat,lng: lng};
                 this.map.setCenter(coords);
-                console.log(friend.position);
             });
 
         },
@@ -114,18 +117,14 @@
                       this.markers[friend.id].setMap(null);
                       this.markers[friend.id] = null;
                   };
-
                   if (this.checked.includes(friend.id)){
                       this.markers[friend.id] = {
                           'coords': coords,
-
                           'last_seen': last_seen,
-                      };
-
-                      this.markers[friend.id] = new google.maps.Marker({position: coords, title:friend.name});
-                      this.markers[friend.id].setMap(this.map);
+                  };
+                  this.markers[friend.id] = new google.maps.Marker({position: coords, title:friend.name});
+                  this.markers[friend.id].setMap(this.map);
                   }
-
               }
           },
             removeMarkerFromArray: function(friend) {
@@ -133,7 +132,6 @@
 
                   if ( typeof this.markers[friend.id] !== 'undefined'){
                       this.markers[friend.id].setMap(null);
-                      //this.markers[friend.id] = null;
                   };
               }
           },
@@ -164,8 +162,6 @@
                      });
 
                  }
-                 console.log(response.data.newPosition);
-                 console.log(this.timeConverter(response.data.newTime));
               });
           },
             isEmpty: function(obj) {
@@ -178,8 +174,6 @@
             findMe: function() {
                 this.wathingAnotherUser = 'false';
             },
-
-
 
          handleLocationError: function(browserHasGeolocation, infoWindow, pos) {
              infoWindow.setPosition(pos);

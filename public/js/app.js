@@ -60003,7 +60003,7 @@ exports = module.exports = __webpack_require__(67)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -60399,11 +60399,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('addFriendOnMap', function (params) {
             _this.checked = params[1];
             var friend = params[0];
-            console.log(friend.coords);
-            var coords = void 0;
-            var lat = parseFloat(JSON.parse(friend.coords.lat));
-            var lng = parseFloat(JSON.parse(friend.coords.lng));
-            coords = { lat: lat, lng: lng };
+            var lat = friend.coords.lat;
+            var lng = friend.coords.lng;
+            lat = parseFloat(lat);
+            lng = parseFloat(lng);
+            var coords = { lat: lat, lng: lng };
             var last_seen = JSON.parse(friend.last_seen);
             _this.addMarkerToArray(coords, last_seen, friend);
         }), __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('removeFriendFromMap', function (params) {
@@ -60411,18 +60411,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             _this.removeMarkerFromArray(friend);
         }), __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('showFriendOnMap', function (moovingFriend) {
             if (_this.checked.includes(moovingFriend.id)) {
-                var lat = parseFloat(JSON.parse(moovingFriend.coords.lat));
-                var lng = parseFloat(JSON.parse(moovingFriend.coords.lng));
+                var lat = moovingFriend.coords.lat;
+                var lng = moovingFriend.coords.lng;
+                lat = parseFloat(lat);
+                lng = parseFloat(lng);
                 var coords = { lat: lat, lng: lng };
                 _this.addMarkerToArray(coords, moovingFriend.last_seen, moovingFriend);
             }
-        }), __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('locateFriend', function (friend) {
+        });
+
+        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('locateFriend', function (friend) {
             _this.wathingAnotherUser = "Yes";
-            var lat = parseFloat(JSON.parse(friend.coords.lat));
-            var lng = parseFloat(JSON.parse(friend.coords.lng));
+            var lat = friend.coords.lat;
+            var lng = friend.coords.lng;
+            lat = parseFloat(lat);
+            lng = parseFloat(lng);
             var coords = { lat: lat, lng: lng };
             _this.map.setCenter(coords);
-            console.log(friend.position);
         });
     },
 
@@ -60472,14 +60477,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     this.markers[friend.id].setMap(null);
                     this.markers[friend.id] = null;
                 };
-
                 if (this.checked.includes(friend.id)) {
                     this.markers[friend.id] = {
                         'coords': coords,
-
                         'last_seen': last_seen
                     };
-
                     this.markers[friend.id] = new google.maps.Marker({ position: coords, title: friend.name });
                     this.markers[friend.id].setMap(this.map);
                 }
@@ -60490,7 +60492,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
                 if (typeof this.markers[friend.id] !== 'undefined') {
                     this.markers[friend.id].setMap(null);
-                    //this.markers[friend.id] = null;
                 };
             }
         },
@@ -60521,8 +60522,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         lng: parseFloat(newLng)
                     });
                 }
-                console.log(response.data.newPosition);
-                console.log(_this3.timeConverter(response.data.newTime));
             });
         },
         isEmpty: function isEmpty(obj) {
@@ -60710,21 +60709,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         getAllFriends: function getAllFriends() {
             var _this = this;
 
-            // console.log(id);
             axios({
                 method: 'get',
                 url: '/frontend/map/get-all-friends'
-                //params: {room_id: id}
             }).then(function (response) {
                 _this.friends = response.data.friends;
-
-                // this.checked = response.data.checked;
-                // this.checkedAfter = [];
-                // this.checked.forEach((item, i) => {
-                //     this.checkedAfter[item] = true;
-                // });
-                // console.log('checked');
-                // console.log(this.checked);
             });
         },
         timeConverter: function timeConverter(UNIX_timestamp) {
@@ -60764,7 +60753,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('removeFriendFromMap', [friend, this.checked]);
             }
         }
-
     },
     mounted: function mounted() {
         var _this2 = this;
@@ -60776,13 +60764,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 time = _ref.time,
                 user_id = _ref.user_id;
 
-            console.log(lat);
-            console.log(lng);
-            console.log(time);
-            console.log(user_id);
             var moovingFriend = _this2.friends.find(function (friend) {
                 return friend.id == user_id;
             });
+            console.log("Friend");
+            console.log(moovingFriend);
             var moovingFriendIndex = _this2.friends.findIndex(function (friend) {
                 return friend.id == user_id;
             });

@@ -56,7 +56,7 @@ class RelationsService
 
     public function writePositionForAuth($lat, $lng)
     {
-        $coordinates = json_encode([$lat,$lng]);
+        $coordinates = json_encode(['lat' => $lat, 'lng' => $lng]);
         Redis::hset('coordinates', 'user:'.Auth::id(), $coordinates);
     }
 
@@ -105,13 +105,5 @@ class RelationsService
        }
 
    }
-
-
-
-
-
-
-
-
 
 }

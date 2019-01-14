@@ -56,28 +56,18 @@
 
         data: function(){
             return {
-                friends: [],
+                 friends: [],
                  checked: [],
                  checkedAfter: [],
             }
         },
         methods: {
             getAllFriends:  function() {
-                // console.log(id);
                 axios({
                     method: 'get',
                     url:    '/frontend/map/get-all-friends',
-                    //params: {room_id: id}
                 }).then((response) => {
                     this.friends = response.data.friends;
-
-                    // this.checked = response.data.checked;
-                    // this.checkedAfter = [];
-                    // this.checked.forEach((item, i) => {
-                    //     this.checkedAfter[item] = true;
-                    // });
-                    // console.log('checked');
-                    // console.log(this.checked);
                 });
             },
             timeConverter: function (UNIX_timestamp){
@@ -118,19 +108,15 @@
                     eventBus.$emit('removeFriendFromMap', [friend, this.checked])
                 }
             }
-
-
         },
         mounted() {
             this.getAllFriends();
             window.Echo.channel('private-coordchanged').listen('CoordChanged', ({lat, lng, time, user_id}) => {
-                console.log(lat);
-                console.log(lng);
-                console.log(time);
-                console.log(user_id);
                 let moovingFriend = this.friends.find((friend)=>{
                     return friend.id == user_id;
                 });
+            console.log("Friend");
+            console.log(moovingFriend);
                 let moovingFriendIndex = this.friends.findIndex((friend)=>{
                     return friend.id == user_id;
                 });
