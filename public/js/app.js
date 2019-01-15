@@ -60003,7 +60003,7 @@ exports = module.exports = __webpack_require__(67)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -60427,6 +60427,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             lat = parseFloat(lat);
             lng = parseFloat(lng);
             var coords = { lat: lat, lng: lng };
+            if (coords.lat == NaN) {
+                console.log('Locate friend function');
+                coords = JSON.parse(friend.coords);
+                lat = coords.lat;
+                lng = coords.lng;
+                lat = parseFloat(lat);
+                lng = parseFloat(lng);
+                coords = { lat: lat, lng: lng };
+            }
             _this.map.setCenter(coords);
         });
     },
@@ -60531,7 +60540,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return JSON.stringify(obj) === JSON.stringify({});
         },
         findMe: function findMe() {
+            var _this4 = this;
+
             this.wathingAnotherUser = 'false';
+            axios({
+                method: 'get',
+                url: '/frontend/map/get-auth'
+            }).then(function (response) {
+                var coords = JSON.parse(response.data.coords);
+                console.log(coords);
+                var lat = parseFloat(coords.lat);
+                var lng = parseFloat(coords.lng);
+                coords = { lat: lat, lng: lng };
+                if (_this4.wathingAnotherUser === 'false') {
+                    _this4.map.setCenter(coords);
+                    console.log('FindMe');
+                    console.log(coords);
+                }
+            });
         },
 
         handleLocationError: function handleLocationError(browserHasGeolocation, infoWindow, pos) {

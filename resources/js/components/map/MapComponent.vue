@@ -68,6 +68,15 @@
                 lat = parseFloat(lat);
                 lng = parseFloat(lng);
                 let coords = {lat: lat,lng: lng};
+                if (coords.lat == NaN){
+                    console.log('Locate friend function');
+                    coords = JSON.parse(friend.coords);
+                    lat = coords.lat;
+                    lng = coords.lng;
+                    lat = parseFloat(lat);
+                    lng = parseFloat(lng);
+                    coords = {lat: lat,lng: lng};
+                }
                 this.map.setCenter(coords);
             });
 
@@ -173,7 +182,20 @@
             },
             findMe: function() {
                 this.wathingAnotherUser = 'false';
+                axios({
+                    method: 'get',
+                    url:    '/frontend/map/get-auth',
+                }).then((response) => {
+                    let coords = JSON.parse(response.data.coords);
+                    let lat = parseFloat(coords.lat);
+                    let lng = parseFloat(coords.lng);
+                    coords = {lat: lat,lng: lng};
+                    if (this.wathingAnotherUser === 'false'){
+                        this.map.setCenter(coords);
+                    }
+                });
             },
+
 
          handleLocationError: function(browserHasGeolocation, infoWindow, pos) {
              infoWindow.setPosition(pos);

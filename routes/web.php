@@ -60,6 +60,7 @@ Route::group([
 
     Route::get('/map/get-all-friends', 'Map\MapController@getAllFriends')->name('map.get-all-friends');
     Route::post('/map/write-new-pos', 'Map\MapController@writeNewPosition')->name('map.write-new-pos');
+    Route::get('/map/get-auth', 'Map\MapController@getAuth')->name('map.get-auth');
 
 });
 

@@ -53,6 +53,12 @@ class User extends Authenticatable
         return $relations->getPositionFor($this->id);
     }
 
+    public function writeCoords($lat, $lng)
+    {
+        $relations = new RelationsService();
+        $relations->writePositionForAuth($lat, $lng);
+    }
+
     public function getLastSeenAttribute()
     {
         $relations = new RelationsService();

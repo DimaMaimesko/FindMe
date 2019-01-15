@@ -25,11 +25,16 @@ class MapController extends Controller
         $ids = $this->relations->getFriendsIdsOf(Auth::id());
         if (!empty($ids)){
             $friends = User::whereIn('id', $ids)->get()->toArray();
-            //dump($friends);
+            dump($friends);
             return ['friends' => $friends];
         }else{
             return ['friends' => []];
         }
+    }
+
+    public function getAuth()
+    {
+       return User::find(Auth::id())->first()->toArray();
     }
 
     public function writeNewPosition(Request $request)
@@ -40,7 +45,8 @@ class MapController extends Controller
         $this->relations->writeTimeForAuth();
         $newPosition = $this->relations->getPositionForAuth();
         $newTime = $this->relations->getTimeForAuth();
-        //event(new CoordChanged($lat, $lng, $newTime, Auth::id()));
+        $user = User::find(Auth::id())->first();
+        $user->writeCoords($lat, $lng);
         broadcast(new CoordChanged($lat, $lng, $newTime, Auth::id()));
         return [
             'newPosition' => $newPosition,
